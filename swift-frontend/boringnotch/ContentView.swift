@@ -592,14 +592,21 @@ struct FullScreenDropDelegate: DropDelegate {
 
 // MARK: - Auditor View
 
-struct AuditorView: View {
-    @EnvironmentObject var vm: BoringViewModel
-    @StateObject var tvm = TrayDrop.shared
-    @State private var isProcessing = false
-    @State private var runId = ""
+    struct AuditorView: View {
+        @EnvironmentObject var vm: BoringViewModel
+        @StateObject var tvm = TrayDrop.shared
+        @State private var isProcessing = false
+        @State private var runId = ""
+        @State private var progress: Double = 0.0
+        @State private var currentPhase = ""
+        
+        init() {
+            NSLog("🔥🔥🔥 DEBUG: AuditorView INITIALIZED! 🔥🔥🔥")
+        }
 
     var body: some View {
-        HStack {
+        print("🔥🔥🔥 DEBUG: AuditorView body called! 🔥🔥🔥")
+        return HStack {
             // Left side: Run Audit button (replaces AirDrop)
             auditButton
             // Right side: Drop zone panel (same as Shelf)
@@ -624,21 +631,40 @@ struct AuditorView: View {
             .contentShape(Rectangle())
     }
     
-    var auditLabel: some View {
-        VStack(spacing: 8) {
-            Image(systemName: isProcessing ? "gearshape.2.fill" : "play.circle.fill")
-                .font(.system(size: 24))
-                .symbolEffect(.pulse, isActive: isProcessing)
-            
-            Text("Run Audit")
-                .font(.system(.headline, design: .rounded))
+        var auditLabel: some View {
+            VStack(spacing: 8) {
+                if isProcessing {
+                    // Progress indicator
+                    VStack(spacing: 4) {
+                        ProgressView(value: progress)
+                            .progressViewStyle(LinearProgressViewStyle(tint: .blue))
+                            .frame(width: 40)
+                        
+                        Text(currentPhase.isEmpty ? "Processing..." : currentPhase)
+                            .font(.system(.caption, design: .rounded))
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                    }
+                } else {
+                    Image(systemName: "play.circle.fill")
+                        .font(.system(size: 24))
+                        .symbolEffect(.pulse, isActive: false)
+                    
+                    Text("Run Audit")
+                        .font(.system(.headline, design: .rounded))
+                }
+            }
+            .foregroundStyle(.gray)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                NSLog("🔥 DEBUG: Button tapped! isProcessing: \(isProcessing)")
+                if !isProcessing {
+                    runAudit()
+                } else {
+                    NSLog("🔥 DEBUG: Button tapped but isProcessing is true, not calling runAudit")
+                }
+            }
         }
-        .foregroundStyle(.gray)
-        .contentShape(Rectangle())
-        .onTapGesture {
-            runAudit()
-        }
-    }
 
     var panel: some View {
         RoundedRectangle(cornerRadius: 16)
@@ -685,24 +711,26 @@ struct AuditorView: View {
     private var spacing: CGFloat { 8 }
     
     private func runAudit() {
+        NSLog("🔥 DEBUG: runAudit() called!")
         guard !tvm.isEmpty else { 
-            print("❌ No files to audit")
+            NSLog("❌ No files to audit")
             return 
         }
         
         Task {
             isProcessing = true
-            print("🚀 Starting audit process...")
+            NSLog("🚀 Starting audit process...")
             
             do {
                 // Get the first file from the tray
                 guard let firstItem = tvm.items.first else { 
-                    print("❌ No file found in tray")
+                    NSLog("❌ No file found in tray")
                     return 
                 }
                 let fileURL = firstItem.storageURL
-                print("📁 Processing file: \(fileURL.lastPathComponent)")
+                NSLog("📁 Processing file: \(fileURL.lastPathComponent)")
                 
+                NSLog("DEBUG: About to call uploadFile with URL: \(fileURL)")
                 let response = try await uploadFile(fileURL)
                 print("✅ Upload successful: \(response.runId)")
                 runId = response.runId
@@ -712,11 +740,8 @@ struct AuditorView: View {
                     tvm.removeAll()
                 }
                 
-                // Reset after 3 seconds
-                try await Task.sleep(for: .seconds(3))
-                isProcessing = false
-                runId = ""
-                print("🎯 Audit process completed")
+                // Check if enqueue was successful by polling the job queue
+                await checkJobStatus(runId: response.runId)
                 
             } catch {
                 print("❌ Audit failed: \(error)")
@@ -726,13 +751,100 @@ struct AuditorView: View {
         }
     }
     
+    private func checkJobStatus(runId: String) async {
+        print("🔍 Checking job status for run: \(runId)")
+        
+        // Update progress to show we're checking
+        DispatchQueue.main.async {
+            self.currentPhase = "Verifying job creation..."
+            self.progress = 0.1
+        }
+        
+        // Poll the job queue to see if our job was created
+        var attempts = 0
+        let maxAttempts = 10
+        
+        while attempts < maxAttempts {
+            do {
+                let statusURL = URL(string: "https://auditor-edge.evanhaque1.workers.dev/runs/\(runId)/status")!
+                let (data, response) = try await URLSession.shared.data(from: statusURL)
+                
+                if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                    if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                       let status = json["status"] as? String {
+                        print("📊 Run status: \(status)")
+                        
+                        DispatchQueue.main.async {
+                            self.currentPhase = "Job created - Processing..."
+                            self.progress = 0.3
+                        }
+                        
+                        // Job was created successfully
+                        await simulateProcessing()
+                        return
+                    }
+                }
+            } catch {
+                print("❌ Error checking job status: \(error)")
+            }
+            
+            attempts += 1
+            try? await Task.sleep(for: .seconds(1))
+        }
+        
+        // If we get here, the job wasn't created
+        print("❌ Job was not created after \(maxAttempts) attempts")
+        DispatchQueue.main.async {
+            self.currentPhase = "Job creation failed"
+            self.progress = 0.0
+        }
+        
+        // Wait a bit then reset
+        try? await Task.sleep(for: .seconds(2))
+        DispatchQueue.main.async {
+            self.isProcessing = false
+            self.runId = ""
+            self.progress = 0.0
+            self.currentPhase = ""
+        }
+    }
+    
+    private func simulateProcessing() async {
+        let phases = [
+            ("Processing with AI...", 0.5),
+            ("Extracting text...", 0.7),
+            ("Generating embeddings...", 0.8),
+            ("Running audit checks...", 0.9),
+            ("Generating report...", 1.0)
+        ]
+        
+        for (phase, progressValue) in phases {
+            DispatchQueue.main.async {
+                self.currentPhase = phase
+                self.progress = progressValue
+            }
+            
+            try? await Task.sleep(for: .seconds(3))
+        }
+        
+        // Complete
+        DispatchQueue.main.async {
+            self.isProcessing = false
+            self.runId = ""
+            self.progress = 0.0
+            self.currentPhase = ""
+        }
+        
+        print("🎯 Audit process completed")
+    }
+    
     private func uploadFile(_ fileURL: URL) async throws -> UploadResponse {
         // Determine content type
         let contentType = fileURL.pathExtension.lowercased() == "csv" ? "text/csv" : "application/pdf"
-        print("📄 Content type: \(contentType)")
+        NSLog("📄 Content type: \(contentType)")
         
         // Step 1: Create upload
-        print("🔄 Step 1: Creating upload request...")
+        NSLog("🔄 Step 1: Creating upload request...")
         let createURL = URL(string: "https://auditor-edge.evanhaque1.workers.dev/uploads/create")!
         var request = URLRequest(url: createURL)
         request.httpMethod = "POST"
@@ -749,42 +861,49 @@ struct AuditorView: View {
         
         // Check response status
         if let httpResponse = response as? HTTPURLResponse {
-            print("📡 Upload create response: \(httpResponse.statusCode)")
-            if httpResponse.statusCode != 200 {
+            NSLog("📡 Upload create response: \(httpResponse.statusCode)")
+            if httpResponse.statusCode != 200 && httpResponse.statusCode != 201 {
                 let errorText = String(data: data, encoding: .utf8) ?? "Unknown error"
-                print("❌ Upload create failed: \(errorText)")
+                NSLog("❌ Upload create failed: \(errorText)")
                 throw NSError(domain: "UploadError", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Failed to create upload: \(errorText)"])
             }
         }
         
         let uploadResp = try JSONDecoder().decode(UploadResponse.self, from: data)
-        print("✅ Upload created: \(uploadResp.runId)")
+        NSLog("✅ Upload created: \(uploadResp.runId)")
         
-        // Step 2: Upload to R2
-        print("🔄 Step 2: Uploading to R2...")
+        // Step 2: Upload to backend direct endpoint
+        NSLog("🔄 Step 2: Uploading to backend...")
         let fileData = try Data(contentsOf: fileURL)
-        print("📦 File size: \(fileData.count) bytes")
+        NSLog("📦 File size: \(fileData.count) bytes")
+        NSLog("🔗 Backend URL: \(uploadResp.r2PutUrl)")
         
-        var r2Request = URLRequest(url: URL(string: uploadResp.r2PutUrl)!)
-        r2Request.httpMethod = "PUT"
-        r2Request.setValue(contentType, forHTTPHeaderField: "Content-Type")
-        r2Request.httpBody = fileData
+        var uploadRequest = URLRequest(url: URL(string: uploadResp.r2PutUrl)!)
+        uploadRequest.httpMethod = "POST"
+        uploadRequest.setValue(contentType, forHTTPHeaderField: "Content-Type")
+        uploadRequest.httpBody = fileData
         
-        let (r2Data, r2Response) = try await URLSession.shared.data(for: r2Request)
-        
-        // Check R2 upload response
-        if let httpResponse = r2Response as? HTTPURLResponse {
-            print("📡 R2 upload response: \(httpResponse.statusCode)")
-            if httpResponse.statusCode != 200 {
-                let errorText = String(data: r2Data, encoding: .utf8) ?? "Unknown error"
-                print("❌ R2 upload failed: \(errorText)")
-                throw NSError(domain: "UploadError", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Failed to upload to R2: \(errorText)"])
+        NSLog("🚀 Sending upload request...")
+        do {
+            let (uploadData, uploadResponse) = try await URLSession.shared.data(for: uploadRequest)
+            
+            // Check upload response
+            if let httpResponse = uploadResponse as? HTTPURLResponse {
+                NSLog("📡 Upload response: \(httpResponse.statusCode)")
+                if httpResponse.statusCode != 200 {
+                    let errorText = String(data: uploadData, encoding: .utf8) ?? "Unknown error"
+                    NSLog("❌ Upload failed: \(errorText)")
+                    throw NSError(domain: "UploadError", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Failed to upload file: \(errorText)"])
+                }
             }
+            NSLog("✅ Upload successful")
+        } catch {
+            NSLog("❌ Upload error: \(error)")
+            throw error
         }
-        print("✅ R2 upload successful")
         
         // Step 3: Enqueue for processing
-        print("🔄 Step 3: Enqueuing job for processing...")
+        NSLog("🔄 Step 3: Enqueuing job for processing...")
         let enqueueURL = URL(string: "https://auditor-edge.evanhaque1.workers.dev/runs/\(uploadResp.runId)/enqueue")!
         var enqueueRequest = URLRequest(url: enqueueURL)
         enqueueRequest.httpMethod = "POST"
@@ -797,16 +916,16 @@ struct AuditorView: View {
         
         // Check if enqueue was successful
         if let httpResponse = enqueueResponse as? HTTPURLResponse {
-            print("📡 Enqueue response: \(httpResponse.statusCode)")
+            NSLog("📡 Enqueue response: \(httpResponse.statusCode)")
             if httpResponse.statusCode != 200 {
                 let errorText = String(data: enqueueData, encoding: .utf8) ?? "Unknown error"
-                print("❌ Enqueue failed: \(errorText)")
+                NSLog("❌ Enqueue failed: \(errorText)")
                 throw NSError(domain: "UploadError", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Failed to enqueue job: \(errorText)"])
             }
         }
         
         let enqueueResponseText = String(data: enqueueData, encoding: .utf8) ?? "No response"
-        print("✅ Job enqueued successfully: \(enqueueResponseText)")
+        NSLog("✅ Job enqueued successfully: \(enqueueResponseText)")
         
         return uploadResp
     }

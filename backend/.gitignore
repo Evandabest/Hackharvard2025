@@ -8,3 +8,4 @@ dist/
 .env.local
 wrangler.toml.local
 
+node_modules/

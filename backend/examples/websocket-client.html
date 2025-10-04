@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auditor Edge WebSocket Test Client</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 30px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-connect {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-connect:hover {
+            background: #5568d3;
+        }
+        
+        .btn-disconnect {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-disconnect:hover {
+            background: #c0392b;
+        }
+        
+        .status {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .status.disconnected {
+            background: #fee;
+            color: #c00;
+        }
+        
+        .status.connected {
+            background: #efe;
+            color: #0a0;
+        }
+        
+        .messages {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        
+        .message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            background: white;
+            border-left: 4px solid #667eea;
+        }
+        
+        .message.progress {
+            border-left-color: #3498db;
+        }
+        
+        .message.error {
+            border-left-color: #e74c3c;
+        }
+        
+        .message.done {
+            border-left-color: #2ecc71;
+        }
+        
+        .timestamp {
+            color: #999;
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔌 WebSocket Test Client</h1>
+        <p class="subtitle">Test real-time run updates from Auditor Edge API</p>
+        
+        <div class="controls">
+            <input 
+                type="text" 
+                id="runId" 
+                placeholder="Enter Run ID (e.g., run_1234567890_abc123)"
+                value="run_test_123"
+            />
+            <button class="btn-connect" onclick="connect()">Connect</button>
+            <button class="btn-disconnect" onclick="disconnect()" disabled>Disconnect</button>
+        </div>
+        
+        <div class="status disconnected" id="status">
+            ⚫ Disconnected
+        </div>
+        
+        <div class="messages" id="messages">
+            <div style="color: #999; text-align: center; padding: 20px;">
+                No messages yet. Enter a run ID and click Connect.
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let ws = null;
+        const baseUrl = 'ws://localhost:8787'; // Change for production
+        
+        function connect() {
+            const runId = document.getElementById('runId').value.trim();
+            
+            if (!runId) {
+                alert('Please enter a Run ID');
+                return;
+            }
+            
+            const url = `${baseUrl}/ws/run/${runId}`;
+            ws = new WebSocket(url);
+            
+            ws.onopen = () => {
+                updateStatus('connected', '🟢 Connected');
+                addMessage('System', 'WebSocket connection established', 'info');
+                document.querySelector('.btn-connect').disabled = true;
+                document.querySelector('.btn-disconnect').disabled = false;
+            };
+            
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    handleMessage(data);
+                } catch (error) {
+                    addMessage('Error', 'Failed to parse message: ' + error.message, 'error');
+                }
+            };
+            
+            ws.onerror = (error) => {
+                addMessage('Error', 'WebSocket error occurred', 'error');
+            };
+            
+            ws.onclose = () => {
+                updateStatus('disconnected', '⚫ Disconnected');
+                addMessage('System', 'WebSocket connection closed', 'info');
+                document.querySelector('.btn-connect').disabled = false;
+                document.querySelector('.btn-disconnect').disabled = true;
+            };
+        }
+        
+        function disconnect() {
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+        }
+        
+        function handleMessage(message) {
+            const { type, data, timestamp } = message;
+            
+            switch (type) {
+                case 'progress':
+                    addProgressMessage(data);
+                    break;
+                case 'message':
+                    addMessage('Message', JSON.stringify(data, null, 2), 'message');
+                    break;
+                case 'done':
+                    addMessage('Complete', 'Processing completed successfully', 'done');
+                    break;
+                case 'error':
+                    addMessage('Error', data.message || 'An error occurred', 'error');
+                    break;
+                default:
+                    addMessage('Unknown', JSON.stringify(message, null, 2), 'message');
+            }
+        }
+        
+        function addProgressMessage(data) {
+            const { phase, percent, lastMessage } = data;
+            
+            const container = document.createElement('div');
+            container.className = 'message progress';
+            
+            const time = new Date().toLocaleTimeString();
+            container.innerHTML = `
+                <div class="timestamp">${time}</div>
+                <div><strong>Phase:</strong> ${phase}</div>
+                <div><strong>Progress:</strong> ${percent}%</div>
+                <div><strong>Message:</strong> ${lastMessage}</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${percent}%"></div>
+                </div>
+            `;
+            
+            addMessageElement(container);
+        }
+        
+        function addMessage(title, content, type = 'message') {
+            const container = document.createElement('div');
+            container.className = `message ${type}`;
+            
+            const time = new Date().toLocaleTimeString();
+            container.innerHTML = `
+                <div class="timestamp">${time}</div>
+                <div><strong>${title}</strong></div>
+                <div style="margin-top: 4px;">${content}</div>
+            `;
+            
+            addMessageElement(container);
+        }
+        
+        function addMessageElement(element) {
+            const messages = document.getElementById('messages');
+            
+            // Clear placeholder
+            if (messages.children.length === 1 && messages.children[0].style.color === '#999') {
+                messages.innerHTML = '';
+            }
+            
+            messages.appendChild(element);
+            messages.scrollTop = messages.scrollHeight;
+        }
+        
+        function updateStatus(status, text) {
+            const statusEl = document.getElementById('status');
+            statusEl.className = `status ${status}`;
+            statusEl.textContent = text;
+        }
+    </script>
+</body>
+</html>
+

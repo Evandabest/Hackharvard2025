@@ -1,0 +1,6 @@
+# Example environment variables for local development
+# Copy this file to .dev.vars and fill in your values
+
+TURNSTILE_SECRET=your-turnstile-secret-here
+JWT_SECRET=your-jwt-secret-here
+

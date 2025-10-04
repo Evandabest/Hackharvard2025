@@ -1,0 +1,337 @@
+{
+  "info": {
+    "name": "Auditor Edge API",
+    "description": "Complete API collection for testing the Auditor Edge API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/",
+          "host": ["{{baseUrl}}"],
+          "path": [""]
+        }
+      }
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Start Auth (Turnstile)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"turnstile-token-here\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/start",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "start"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Uploads",
+      "item": [
+        {
+          "name": "Create Upload",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "pm.environment.set('runId', response.runId);",
+                  "pm.environment.set('r2Key', response.r2Key);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contentType\": \"application/pdf\",\n  \"filename\": \"test-document.pdf\",\n  \"tenantId\": \"tenant_test_001\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/uploads/create",
+              "host": ["{{baseUrl}}"],
+              "path": ["uploads", "create"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Runs",
+      "item": [
+        {
+          "name": "Enqueue Run",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"r2Key\": \"{{r2Key}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/runs/{{runId}}/enqueue",
+              "host": ["{{baseUrl}}"],
+              "path": ["runs", "{{runId}}", "enqueue"]
+            }
+          }
+        },
+        {
+          "name": "Get Run Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/runs/{{runId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["runs", "{{runId}}", "status"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vector Operations",
+      "item": [
+        {
+          "name": "Upsert Vectors",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [\"chunk-1\", \"chunk-2\"],\n  \"vectors\": [\n    [0.1, 0.2, 0.3, 0.4, 0.5],\n    [0.6, 0.7, 0.8, 0.9, 1.0]\n  ],\n  \"metadatas\": [\n    {\"text\": \"First chunk\", \"page\": 1},\n    {\"text\": \"Second chunk\", \"page\": 2}\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/vector/upsert",
+              "host": ["{{baseUrl}}"],
+              "path": ["vector", "upsert"]
+            }
+          }
+        },
+        {
+          "name": "Query Vectors",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vector\": [0.1, 0.2, 0.3, 0.4, 0.5],\n  \"topK\": 5,\n  \"filter\": {\n    \"page\": 1\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/vector/query",
+              "host": ["{{baseUrl}}"],
+              "path": ["vector", "query"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "D1 Database",
+      "item": [
+        {
+          "name": "Insert Run",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"insert_run\",\n  \"params\": [\"run_123\", \"tenant_001\", \"pending\", \"path/to/file.pdf\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/d1/query",
+              "host": ["{{baseUrl}}"],
+              "path": ["d1", "query"]
+            }
+          }
+        },
+        {
+          "name": "Update Status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"update_status\",\n  \"params\": [\"run_123\", \"completed\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/d1/query",
+              "host": ["{{baseUrl}}"],
+              "path": ["d1", "query"]
+            }
+          }
+        },
+        {
+          "name": "Get Run",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"get_run\",\n  \"params\": [\"{{runId}}\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/d1/query",
+              "host": ["{{baseUrl}}"],
+              "path": ["d1", "query"]
+            }
+          }
+        },
+        {
+          "name": "Insert Finding",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"insert_finding\",\n  \"params\": [\n    \"finding_001\",\n    \"{{runId}}\",\n    \"F001\",\n    \"high\",\n    \"Missing Documentation\",\n    \"Critical documentation is missing from the audit file\",\n    \"evidence/doc1.pdf\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/d1/query",
+              "host": ["{{baseUrl}}"],
+              "path": ["d1", "query"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI Gateway (Server Only)",
+      "item": [
+        {
+          "name": "LLM Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Server-Auth",
+                "value": "{{jwtSecret}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"gemini-pro\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Analyze this audit document and provide key findings.\"\n    }\n  ],\n  \"temperature\": 0.7\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/llm/gateway",
+              "host": ["{{baseUrl}}"],
+              "path": ["llm", "gateway"]
+            }
+          }
+        },
+        {
+          "name": "Generate Embeddings",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Server-Auth",
+                "value": "{{jwtSecret}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"texts\": [\n    \"This is a sample text to embed\",\n    \"Another text for embedding\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/llm/embed",
+              "host": ["{{baseUrl}}"],
+              "path": ["llm", "embed"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8787",
+      "type": "string"
+    },
+    {
+      "key": "runId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "r2Key",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "jwtSecret",
+      "value": "your-jwt-secret",
+      "type": "string"
+    }
+  ]
+}
+

@@ -1,0 +1,49 @@
+name = "auditor-edge"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# R2 bucket for PDFs/CSVs and evidence files
+[[r2_buckets]]
+binding = ""
+bucket_name = ""
+
+
+# D1 database for runs, findings, events
+[[d1_databases]]
+binding = "DB"
+database_name = ""
+database_id = "" 
+
+# Vectorize index for embeddings
+[[vectorize]]
+binding = "VEC"
+index_name = ""
+
+# Durable Objects for WebSocket state
+[[durable_objects.bindings]]
+name = "RUNROOM"
+class_name = "RunRoom"
+script_name = ""
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["RunRoom"]
+
+# AI Gateway configuration
+[vars]
+AI_GATEWAY_URL = ""
+
+# Placeholder for Workers AI (if needed later)
+[ai]
+binding = "AI"
+
+# Secrets (set via: wrangler secret put <NAME>)
+# TURNSTILE_SECRET
+# JWT_SECRET
+
+# Optional: Cron trigger to unlock stuck jobs every 10 minutes
+# Uncomment to enable:
+# [triggers]
+# crons = ["*/10 * * * *"]
+

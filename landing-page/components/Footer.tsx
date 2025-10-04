@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { CheckCircle, Github, Twitter, Linkedin, Mail } from 'lucide-react'
+import { Shield, Github, Twitter, Linkedin, Mail } from 'lucide-react'
 
 export function Footer() {
   const footerLinks = {
@@ -53,13 +53,13 @@ export function Footer() {
           >
             <div className="flex items-center space-x-2 mb-4">
               <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg flex items-center justify-center">
-                <CheckCircle className="w-5 h-5 text-white" />
+                <Shield className="w-5 h-5 text-white" />
               </div>
               <span className="text-2xl font-bold text-white">HaloAudit</span>
             </div>
             <p className="text-white/70 mb-6 max-w-md">
-              Transform your document analysis with AI-powered insights. 
-              Beautiful, fast, and secure document processing for the modern world.
+              AI-powered compliance auditing that saves money and ensures accuracy. 
+              Transform your business compliance with intelligent automation.
             </p>
             <div className="flex space-x-4">
               {socialLinks.map((social) => (
@@ -114,10 +114,10 @@ export function Footer() {
         >
           <div className="max-w-2xl mx-auto text-center">
             <h3 className="text-2xl font-bold text-white mb-4">
-              Stay Updated
+              Stay Compliant
             </h3>
             <p className="text-white/70 mb-6">
-              Get the latest updates, features, and tips delivered to your inbox.
+              Get the latest compliance updates, regulatory changes, and cost-saving tips delivered to your inbox.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
               <input
@@ -149,7 +149,7 @@ export function Footer() {
               &copy; 2024 HaloAudit. All rights reserved.
             </p>
             <div className="flex items-center space-x-6 text-sm text-white/60">
-              <span>Made with ❤️ for developers</span>
+              <span>Made with ❤️ for compliance teams</span>
               <div className="w-1 h-1 bg-white/40 rounded-full"></div>
               <span>Version 1.0.0</span>
             </div>

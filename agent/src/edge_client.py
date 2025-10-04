@@ -225,6 +225,74 @@ class EdgeClient:
             logger.error(f"Failed to insert finding: {e}")
             return False
 
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=2, min=4, max=30),
+    )
+    def llm_gateway(
+        self,
+        contents: list[dict[str, Any]],
+        generation_config: dict[str, Any] | None = None,
+    ) -> dict:
+        """
+        Call Gemini via AI Gateway through edge proxy.
+
+        Args:
+            contents: Gemini conversation contents
+            generation_config: Optional generation config
+
+        Returns:
+            Gemini response data
+        """
+        payload = {"contents": contents}
+        if generation_config:
+            payload["generationConfig"] = generation_config
+
+        logger.debug("Calling Gemini via AI Gateway")
+
+        response = self.client.post(
+            f"{self.base_url}/llm/gateway",
+            headers=self.headers,
+            content=orjson.dumps(payload),
+        )
+        response.raise_for_status()
+
+        data = response.json()
+        logger.info("Gemini gateway call successful")
+        return data
+
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=2, min=4, max=30),
+    )
+    def llm_embed(
+        self,
+        requests: list[dict[str, Any]],
+    ) -> dict:
+        """
+        Generate embeddings via AI Gateway through edge proxy.
+
+        Args:
+            requests: List of embedding requests
+
+        Returns:
+            Embedding response data
+        """
+        payload = {"requests": requests}
+
+        logger.debug(f"Generating {len(requests)} embeddings via AI Gateway")
+
+        response = self.client.post(
+            f"{self.base_url}/llm/embed",
+            headers=self.headers,
+            content=orjson.dumps(payload),
+        )
+        response.raise_for_status()
+
+        data = response.json()
+        logger.info("Embedding generation successful")
+        return data
+
     def close(self):
         """Close the HTTP client."""
         self.client.close()

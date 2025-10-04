@@ -7,22 +7,22 @@ export function HowItWorks() {
   const steps = [
     {
       number: '01',
-      title: 'Upload Your Files',
-      description: 'Simply drag and drop your PDF or CSV files into HaloAudit. Our intelligent system automatically detects file types and prepares them for analysis.',
+      title: 'Upload Compliance Documents',
+      description: 'Simply drag and drop your compliance documents, financial records, or audit files into HaloAudit. Our AI automatically detects document types and prepares them for analysis.',
       icon: Upload,
       color: 'from-blue-500 to-cyan-500',
     },
     {
       number: '02',
-      title: 'AI Analysis',
-      description: 'Our advanced AI algorithms process your documents, extracting key information, patterns, and insights with remarkable accuracy.',
+      title: 'AI-Powered Compliance Analysis',
+      description: 'Our advanced AI algorithms analyze your documents for compliance issues, regulatory violations, and potential risks with 99.9% accuracy, identifying problems humans might miss.',
       icon: Brain,
       color: 'from-purple-500 to-pink-500',
     },
     {
       number: '03',
-      title: 'Get Insights',
-      description: 'Receive comprehensive analysis results with clear visualizations, summaries, and actionable recommendations tailored to your needs.',
+      title: 'Get Actionable Insights',
+      description: 'Receive comprehensive compliance reports with clear recommendations, cost-saving opportunities, and actionable steps to improve your business compliance posture.',
       icon: BarChart3,
       color: 'from-green-500 to-emerald-500',
     },
@@ -43,7 +43,7 @@ export function HowItWorks() {
             How It Works
           </h2>
           <p className="text-xl text-white/80 max-w-3xl mx-auto">
-            Simple steps to powerful insights
+            Simple steps to powerful compliance insights
           </p>
         </motion.div>
 

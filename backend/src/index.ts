@@ -9,7 +9,7 @@ import { rateLimit } from './middleware/ratelimit.js';
 
 // Route handlers
 import { authStart } from './routes/auth.js';
-import { createUpload } from './routes/uploads.js';
+import { createUpload, directUpload } from './routes/uploads.js';
 import { enqueueRun, getRunStatus } from './routes/runs.js';
 import { vectorUpsert, vectorQuery } from './routes/vector.js';
 import { d1Query } from './routes/d1.js';
@@ -42,11 +42,39 @@ app.get('/', (c) => {
   });
 });
 
+// R2 test endpoint
+app.get('/test-r2', async (c) => {
+  try {
+    console.log('Testing R2 binding...');
+    console.log('R2_BUCKET type:', typeof c.env.R2_BUCKET);
+    console.log('R2_BUCKET methods:', Object.getOwnPropertyNames(c.env.R2_BUCKET));
+    
+    // Try to list objects
+    const objects = await c.env.R2_BUCKET.list();
+    console.log('R2 objects count:', objects.objects.length);
+    
+    return c.json({
+      success: true,
+      bucketType: typeof c.env.R2_BUCKET,
+      objectCount: objects.objects.length,
+      methods: Object.getOwnPropertyNames(c.env.R2_BUCKET)
+    });
+  } catch (error) {
+    console.error('R2 test error:', error);
+    return c.json({
+      success: false,
+      error: error.message,
+      bucketType: typeof c.env.R2_BUCKET
+    });
+  }
+});
+
 // Auth routes
 app.post('/auth/start', rateLimit({ maxTokens: 10, refillRate: 1 }), authStart);
 
 // Upload routes
 app.post('/uploads/create', rateLimit({ maxTokens: 20, refillRate: 2 }), createUpload);
+app.post('/uploads/direct/:runId', rateLimit({ maxTokens: 50, refillRate: 5 }), directUpload);
 
 // Run management routes
 app.post('/runs/:runId/enqueue', rateLimit({ maxTokens: 20, refillRate: 2 }), enqueueRun);

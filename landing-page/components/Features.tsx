@@ -3,14 +3,16 @@
 import { motion } from 'framer-motion'
 import { 
   Brain, 
-  Clock, 
-  Monitor, 
+  DollarSign, 
   Shield, 
+  Clock, 
   FileText, 
   BarChart3,
   Zap,
   Lock,
-  Sparkles
+  Sparkles,
+  Target,
+  TrendingUp
 } from 'lucide-react'
 
 export function Features() {
@@ -18,38 +20,56 @@ export function Features() {
     {
       icon: Brain,
       title: 'AI-Powered Analysis',
-      description: 'Advanced machine learning algorithms extract insights from your documents with unprecedented accuracy.',
+      description: 'Advanced machine learning algorithms analyze compliance documents with 99.9% accuracy, identifying issues humans might miss.',
       color: 'from-purple-500 to-pink-500',
     },
     {
-      icon: Clock,
-      title: 'Real-time Processing',
-      description: 'Get instant results with our optimized processing pipeline that delivers insights in seconds.',
-      color: 'from-blue-500 to-cyan-500',
-    },
-    {
-      icon: Monitor,
-      title: 'Native macOS Integration',
-      description: 'Seamlessly integrated with macOS, featuring beautiful animations and intuitive gestures.',
+      icon: DollarSign,
+      title: 'Significant Cost Savings',
+      description: 'Reduce compliance costs by up to 60% through automated auditing processes and reduced manual labor requirements.',
       color: 'from-green-500 to-emerald-500',
     },
     {
       icon: Shield,
       title: 'Enterprise Security',
-      description: 'Your data is protected with end-to-end encryption and enterprise-grade security measures.',
+      description: 'Bank-grade security with end-to-end encryption ensures your sensitive compliance data remains protected at all times.',
       color: 'from-red-500 to-orange-500',
     },
     {
+      icon: Clock,
+      title: 'Real-time Processing',
+      description: 'Get instant compliance insights with our optimized AI pipeline that delivers audit results in seconds, not days.',
+      color: 'from-blue-500 to-cyan-500',
+    },
+    {
       icon: FileText,
-      title: 'Multiple Formats',
-      description: 'Support for PDF, CSV, and more file formats with intelligent content recognition.',
+      title: 'Multi-Format Support',
+      description: 'Process PDFs, Excel files, CSV data, and more with intelligent content recognition for comprehensive compliance coverage.',
       color: 'from-indigo-500 to-purple-500',
     },
     {
       icon: BarChart3,
       title: 'Actionable Insights',
-      description: 'Transform raw data into clear, actionable insights that drive better decision making.',
+      description: 'Transform raw compliance data into clear, actionable reports that help you make informed business decisions.',
       color: 'from-yellow-500 to-amber-500',
+    },
+    {
+      icon: Target,
+      title: 'Regulatory Compliance',
+      description: 'Stay compliant with SOX, GDPR, HIPAA, and other regulations with automated compliance monitoring and reporting.',
+      color: 'from-pink-500 to-rose-500',
+    },
+    {
+      icon: TrendingUp,
+      title: 'Performance Analytics',
+      description: 'Track compliance metrics, identify trends, and optimize your audit processes with detailed analytics and reporting.',
+      color: 'from-cyan-500 to-blue-500',
+    },
+    {
+      icon: Zap,
+      title: 'Automated Workflows',
+      description: 'Streamline your compliance processes with intelligent automation that reduces manual work and human error.',
+      color: 'from-orange-500 to-red-500',
     },
   ]
 
@@ -65,10 +85,10 @@ export function Features() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">
-            Powerful Features
+            Powerful Compliance Features
           </h2>
           <p className="text-xl text-white/80 max-w-3xl mx-auto">
-            Everything you need for intelligent document analysis
+            Everything you need for intelligent compliance auditing and cost reduction
           </p>
         </motion.div>
 

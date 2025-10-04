@@ -8,7 +8,6 @@ export function ThreeScene() {
   useEffect(() => {
     if (!canvasRef.current) return
 
-    // Simple CSS-based animated background instead of Three.js
     const canvas = canvasRef.current
     const ctx = canvas.getContext('2d')
     if (!ctx) return
@@ -25,10 +24,8 @@ export function ThreeScene() {
       time += 0.01
       
       if (ctx) {
-        // Clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height)
         
-        // Create gradient background
         const gradient = ctx.createRadialGradient(
           canvas.width / 2, canvas.height / 2, 0,
           canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height) / 2
@@ -40,7 +37,6 @@ export function ThreeScene() {
         ctx.fillStyle = gradient
         ctx.fillRect(0, 0, canvas.width, canvas.height)
         
-        // Draw floating circles
         for (let i = 0; i < 5; i++) {
           const x = (canvas.width / 6) * (i + 1) + Math.sin(time + i) * 50
           const y = canvas.height / 2 + Math.cos(time * 0.5 + i) * 100
@@ -62,7 +58,6 @@ export function ThreeScene() {
 
     resizeCanvas()
     animate()
-
     window.addEventListener('resize', resizeCanvas)
 
     return () => {

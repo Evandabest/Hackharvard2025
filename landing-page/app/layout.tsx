@@ -5,9 +5,9 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'HaloAudit - AI-Powered Document Analysis',
-  description: 'Transform your document analysis with HaloAudit. AI-powered PDF and CSV processing with real-time insights and beautiful macOS integration.',
-  keywords: 'AI, document analysis, PDF processing, CSV analysis, macOS app, machine learning',
+  title: 'HaloAudit - AI-Powered Compliance & Auditing Platform',
+  description: 'Transform your business compliance with HaloAudit. AI-powered auditing that saves money, ensures accuracy, and automates compliance processes for modern businesses.',
+  keywords: 'AI auditing, compliance automation, business compliance, cost savings, AI accuracy, audit software, compliance platform',
   authors: [{ name: 'HaloAudit Team' }],
   creator: 'HaloAudit',
   publisher: 'HaloAudit',
@@ -18,8 +18,8 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL('https://haloaudit.com'),
   openGraph: {
-    title: 'HaloAudit - AI-Powered Document Analysis',
-    description: 'Transform your document analysis with HaloAudit. AI-powered PDF and CSV processing with real-time insights and beautiful macOS integration.',
+    title: 'HaloAudit - AI-Powered Compliance & Auditing Platform',
+    description: 'Transform your business compliance with HaloAudit. AI-powered auditing that saves money, ensures accuracy, and automates compliance processes for modern businesses.',
     url: 'https://haloaudit.com',
     siteName: 'HaloAudit',
     images: [
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'HaloAudit - AI-Powered Document Analysis',
+        alt: 'HaloAudit - AI-Powered Compliance & Auditing Platform',
       },
     ],
     locale: 'en_US',
@@ -35,8 +35,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'HaloAudit - AI-Powered Document Analysis',
-    description: 'Transform your document analysis with HaloAudit. AI-powered PDF and CSV processing with real-time insights and beautiful macOS integration.',
+    title: 'HaloAudit - AI-Powered Compliance & Auditing Platform',
+    description: 'Transform your business compliance with HaloAudit. AI-powered auditing that saves money, ensures accuracy, and automates compliance processes for modern businesses.',
     images: ['/og-image.jpg'],
   },
   robots: {

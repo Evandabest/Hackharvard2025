@@ -7,7 +7,7 @@ import { DownloadButton } from './DownloadButton'
 export function Download() {
   const features = [
     { icon: CheckCircle, text: 'Free to download' },
-    { icon: Shield, text: 'Secure & Private' },
+    { icon: Shield, text: 'Enterprise Security' },
     { icon: Zap, text: 'Lightning Fast' },
   ]
 
@@ -25,11 +25,11 @@ export function Download() {
           >
             <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">
               Ready to Transform Your{' '}
-              <span className="gradient-text">Document Analysis?</span>
+              <span className="gradient-text">Compliance Process?</span>
             </h2>
             
             <p className="text-xl text-white/80 mb-8 max-w-2xl">
-              Download HaloAudit today and experience the future of intelligent document processing.
+              Download HaloAudit today and start saving money while ensuring compliance accuracy with AI-powered auditing.
             </p>
 
             {/* Download Buttons */}
@@ -97,7 +97,7 @@ export function Download() {
                       className="bg-gray-800/50 rounded-xl p-6 border border-gray-700"
                     >
                       <div className="flex items-center justify-between mb-4">
-                        <h4 className="text-lg font-semibold text-white">Analysis Complete</h4>
+                        <h4 className="text-lg font-semibold text-white">Compliance Audit Complete</h4>
                         <div className="flex items-center space-x-2">
                           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                           <span className="text-sm text-green-400 font-medium">Success</span>
@@ -112,8 +112,8 @@ export function Download() {
                           viewport={{ once: true }}
                           className="flex items-center justify-between py-2 border-b border-gray-700/50"
                         >
-                          <span className="text-white/60 text-sm">Key Insights</span>
-                          <span className="text-primary-400 font-semibold">12 found</span>
+                          <span className="text-white/60 text-sm">Compliance Issues</span>
+                          <span className="text-red-400 font-semibold">3 found</span>
                         </motion.div>
                         
                         <motion.div
@@ -123,8 +123,8 @@ export function Download() {
                           viewport={{ once: true }}
                           className="flex items-center justify-between py-2 border-b border-gray-700/50"
                         >
-                          <span className="text-white/60 text-sm">Processing Time</span>
-                          <span className="text-green-400 font-semibold">2.3s</span>
+                          <span className="text-white/60 text-sm">Cost Savings</span>
+                          <span className="text-green-400 font-semibold">$12,500</span>
                         </motion.div>
                         
                         <motion.div
@@ -134,7 +134,7 @@ export function Download() {
                           viewport={{ once: true }}
                           className="flex items-center justify-between py-2"
                         >
-                          <span className="text-white/60 text-sm">Confidence</span>
+                          <span className="text-white/60 text-sm">AI Confidence</span>
                           <span className="text-accent-400 font-semibold">98.5%</span>
                         </motion.div>
                       </div>
@@ -148,10 +148,10 @@ export function Download() {
                       viewport={{ once: true }}
                       className="space-y-3"
                     >
-                      <div className="text-sm text-white/60 mb-2">Processing Progress</div>
+                      <div className="text-sm text-white/60 mb-2">Audit Progress</div>
                       <div className="space-y-2">
                         <div className="flex items-center justify-between text-xs text-white/60">
-                          <span>Text Extraction</span>
+                          <span>Document Analysis</span>
                           <span>100%</span>
                         </div>
                         <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
@@ -165,7 +165,7 @@ export function Download() {
                         </div>
                         
                         <div className="flex items-center justify-between text-xs text-white/60">
-                          <span>AI Analysis</span>
+                          <span>Compliance Check</span>
                           <span>100%</span>
                         </div>
                         <div className="h-2 bg-gray-700 rounded-full overflow-hidden">

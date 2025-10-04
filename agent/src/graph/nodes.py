@@ -53,11 +53,8 @@ def ingest(state: RunState, r2_client: R2Client, edge_client: EdgeClient) -> Run
                 mime_type = "application/octet-stream"
 
         state.mime_type = mime_type
+        state.file_bytes = file_bytes
         logger.info(f"[{state.run_id}] Downloaded {len(file_bytes)} bytes ({mime_type})")
-
-        # Store bytes temporarily (in real implementation, might pass through state)
-        # For now, we'll store in a temporary attribute
-        state.__dict__["_file_bytes"] = file_bytes
 
         edge_client.emit_event(
             state.run_id,
@@ -95,12 +92,11 @@ def extract_text_with_gemini(
         return state
 
     try:
-        file_bytes = state.__dict__.get("_file_bytes")
-        if not file_bytes:
+        if not state.file_bytes:
             raise ValueError("No file bytes available")
 
         # Extract text using Gemini
-        raw_text = gemini_client.extract_text(file_bytes, state.mime_type or "application/pdf")
+        raw_text = gemini_client.extract_text(state.file_bytes, state.mime_type or "application/pdf")
         state.raw_text = raw_text
 
         logger.info(f"[{state.run_id}] Extracted {len(raw_text)} characters")
@@ -110,9 +106,8 @@ def extract_text_with_gemini(
             f"Text extracted: {len(raw_text)} characters",
         )
 
-        # Clean up temporary bytes
-        if "_file_bytes" in state.__dict__:
-            del state.__dict__["_file_bytes"]
+        # Clean up file bytes to save memory
+        state.file_bytes = None
 
     except Exception as e:
         logger.error(f"[{state.run_id}] Text extraction failed: {e}")

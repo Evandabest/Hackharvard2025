@@ -90,7 +90,7 @@ Edit `wrangler.toml` and replace:
 # Turnstile secret (get from Cloudflare dashboard)
 wrangler secret put TURNSTILE_SECRET
 
-# JWT secret (generate a random string)
+# JWT secret (use the generated secret)
 wrangler secret put JWT_SECRET
 ```
 

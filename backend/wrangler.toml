@@ -5,26 +5,25 @@ compatibility_flags = ["nodejs_compat"]
 
 # R2 bucket for PDFs/CSVs and evidence files
 [[r2_buckets]]
-binding = ""
-bucket_name = ""
-
+binding = "R2_BUCKET"
+bucket_name = "auditor"
 
 # D1 database for runs, findings, events
 [[d1_databases]]
 binding = "DB"
-database_name = ""
-database_id = "" 
+database_name = "auditor"
+database_id = "deb22e02-1ce1-448f-b88f-6bea53de193f"
 
 # Vectorize index for embeddings
 [[vectorize]]
 binding = "VEC"
-index_name = ""
+index_name = "auditor-index"
 
 # Durable Objects for WebSocket state
 [[durable_objects.bindings]]
 name = "RUNROOM"
 class_name = "RunRoom"
-script_name = ""
+script_name = "auditor-edge"
 
 [[migrations]]
 tag = "v1"
@@ -32,7 +31,7 @@ new_sqlite_classes = ["RunRoom"]
 
 # AI Gateway configuration
 [vars]
-AI_GATEWAY_URL = ""
+AI_GATEWAY_URL = "https://gateway.ai.cloudflare.com/v1/99b429887ccf20faca6cd78dbeb0a207/auditor-gateway/google-ai-studio"
 
 # Placeholder for Workers AI (if needed later)
 [ai]

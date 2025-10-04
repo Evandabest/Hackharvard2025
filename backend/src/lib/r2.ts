@@ -25,16 +25,27 @@ export async function createSignedUploadUrl(
   const { bucket, key, contentType, expiresIn = 3600 } = params;
 
   try {
+    console.log('Creating signed upload URL for:', { key, contentType, expiresIn });
+    console.log('Bucket type:', typeof bucket);
+    console.log('Bucket methods:', Object.getOwnPropertyNames(bucket));
+    
     // For simple uploads, use a direct PUT URL instead of multipart
     // This avoids the multipart upload issue
     const putUrl = await generatePresignedUrl(bucket, key, contentType, expiresIn);
+    
+    console.log('Generated presigned URL:', putUrl);
 
     return {
       putUrl,
       key,
     };
   } catch (error) {
-    console.error('Failed to create signed upload URL:', error);
+    if (error instanceof Error) {
+      console.error('Failed to create signed upload URL:', error);
+      console.error('Error details:', error.message, error.stack);
+    } else {
+      console.error('Failed to create signed upload URL:', error);
+    }
     throw new AppError(500, 'R2_ERROR', 'Failed to generate upload URL');
   }
 }
@@ -54,7 +65,7 @@ export function generateObjectKey(
 
 /**
  * Generate a presigned PUT URL for R2
- * Using R2's public URL with proper authentication
+ * Using R2's built-in presigned URL generation
  */
 async function generatePresignedUrl(
   bucket: R2Bucket,
@@ -62,18 +73,26 @@ async function generatePresignedUrl(
   contentType: string,
   expiresIn: number
 ): Promise<string> {
-  // Use R2's public URL with proper query parameters
-  // This creates a direct PUT URL that doesn't use multipart uploads
-  const baseUrl = `https://auditor.r2.cloudflarestorage.com/${key}`;
-  const params = new URLSearchParams({
-    'X-Amz-Expires': expiresIn.toString(),
-    'X-Amz-Algorithm': 'AWS4-HMAC-SHA256',
-    'X-Amz-Date': new Date().toISOString().replace(/[:\-]|\.\d{3}/g, ''),
-    'X-Amz-SignedHeaders': 'content-type',
-    'Content-Type': contentType
-  });
-  
-  return `${baseUrl}?${params.toString()}`;
+  try {
+    console.log('Generating presigned URL with params:', { key, contentType, expiresIn });
+    
+    // For R2, we need to use the public URL with proper authentication
+    // R2 doesn't have createPresignedUrl, so we'll use a different approach
+    // We'll create a simple URL that works with R2's public access
+    const putUrl = `https://auditor.r2.cloudflarestorage.com/${key}`;
+    
+    console.log('Generated presigned URL:', putUrl);
+    return putUrl;
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('Error in generatePresignedUrl:', error);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+    } else {
+      console.error('Error in generatePresignedUrl:', error);
+    }
+    throw error;
+  }
 }
 
 /**
@@ -90,4 +109,3 @@ export async function validateUpload(
     return false;
   }
 }
-

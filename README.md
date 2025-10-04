@@ -1,4 +1,4 @@
-#HaloAudit
+# HaloAudit
 
 HaloAudit is an AI-powered data auditor that lives quietly at the top of your screen. Just drag a file to the halo, and it instantly scans for sensitive data, security risks, and quality issues — right on your device.
 

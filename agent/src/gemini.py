@@ -1,34 +1,22 @@
-"""Gemini AI client via Cloudflare AI Gateway."""
+"""Gemini AI client via Edge Worker proxy."""
 
 import base64
 import logging
 from typing import Any
 
-import httpx
-import orjson
-from tenacity import retry, stop_after_attempt, wait_exponential
-
 from .config import Config
+from .edge_client import EdgeClient
 
 logger = logging.getLogger(__name__)
 
 
 class GeminiClient:
-    """Client for Gemini AI via Cloudflare AI Gateway."""
+    """Client for Gemini AI via Edge Worker proxy."""
 
-    def __init__(self, config: Config):
+    def __init__(self, config: Config, edge_client: EdgeClient):
         self.config = config
-        self.base_url = config.ai_gateway_url.rstrip("/")
-        self.client = httpx.Client(timeout=120.0)  # Longer timeout for AI calls
-        self.headers = {
-            "Authorization": f"Bearer {config.google_api_key}",
-            "Content-Type": "application/json",
-        }
+        self.edge_client = edge_client
 
-    @retry(
-        stop=stop_after_attempt(3),
-        wait=wait_exponential(multiplier=2, min=4, max=30),
-    )
     def extract_text(self, file_bytes: bytes, mime_type: str) -> str:
         """
         Extract text from a document using Gemini's multimodal capabilities.
@@ -42,50 +30,37 @@ class GeminiClient:
 
         Returns:
             Extracted text content
-
-        Raises:
-            httpx.HTTPError: If API call fails
         """
         # Base64 encode the file
         encoded_data = base64.b64encode(file_bytes).decode("utf-8")
 
         # Build the request payload
-        payload = {
-            "contents": [
-                {
-                    "role": "user",
-                    "parts": [
-                        {
-                            "text": (
-                                "Extract all readable text and tabular data from this document as UTF-8 plain text. "
-                                "Preserve row/column order where possible. "
-                                "Include all text content, tables, headers, and footers. "
-                                "Do not add any commentary or explanation, just return the extracted text."
-                            )
-                        },
-                        {"inlineData": {"mimeType": mime_type, "data": encoded_data}},
-                    ],
-                }
-            ],
-            "generationConfig": {
-                "temperature": 0.1,  # Low temperature for consistent extraction
-                "maxOutputTokens": 8192,
-            },
+        contents = [
+            {
+                "role": "user",
+                "parts": [
+                    {
+                        "text": (
+                            "Extract all readable text and tabular data from this document as UTF-8 plain text. "
+                            "Preserve row/column order where possible. "
+                            "Include all text content, tables, headers, and footers. "
+                            "Do not add any commentary or explanation, just return the extracted text."
+                        )
+                    },
+                    {"inlineData": {"mimeType": mime_type, "data": encoded_data}},
+                ],
+            }
+        ]
+
+        generation_config = {
+            "temperature": 0.1,  # Low temperature for consistent extraction
+            "maxOutputTokens": 8192,
         }
 
         logger.info(f"Extracting text from {len(file_bytes)} bytes ({mime_type})")
 
-        # Call Gemini via AI Gateway (use configured model)
-        # Default to gemini-2.0-flash if not specified
-        model = getattr(self.config, 'gemini_chat_model', 'gemini-2.0-flash')
-        response = self.client.post(
-            f"{self.base_url}/models/{model}:generateContent",
-            headers=self.headers,
-            content=orjson.dumps(payload),
-        )
-        response.raise_for_status()
-
-        data = response.json()
+        # Call Gemini via edge proxy
+        data = self.edge_client.llm_gateway(contents, generation_config)
 
         # Extract text from response
         try:
@@ -111,10 +86,6 @@ class GeminiClient:
             logger.debug(f"Response data: {data}")
             return ""
 
-    @retry(
-        stop=stop_after_attempt(3),
-        wait=wait_exponential(multiplier=2, min=4, max=30),
-    )
     def embed_texts(self, texts: list[str]) -> list[list[float]]:
         """
         Generate embeddings for texts using Gemini's embedding model.
@@ -124,9 +95,6 @@ class GeminiClient:
 
         Returns:
             List of embedding vectors
-
-        Raises:
-            httpx.HTTPError: If API call fails
         """
         if not texts:
             return []
@@ -136,20 +104,10 @@ class GeminiClient:
         for text in texts:
             requests.append({"model": "models/text-embedding-004", "content": {"parts": [{"text": text}]}})
 
-        payload = {"requests": requests}
-
         logger.info(f"Embedding {len(texts)} texts")
 
-        # Use configured embedding model
-        embed_model = getattr(self.config, 'gemini_embed_model', 'text-embedding-004')
-        response = self.client.post(
-            f"{self.base_url}/models/{embed_model}:batchEmbedContents",
-            headers=self.headers,
-            content=orjson.dumps(payload),
-        )
-        response.raise_for_status()
-
-        data = response.json()
+        # Call via edge proxy
+        data = self.edge_client.llm_embed(requests)
 
         # Extract embeddings from response
         embeddings = []
@@ -161,10 +119,6 @@ class GeminiClient:
         logger.info(f"Generated {len(embeddings)} embeddings")
         return embeddings
 
-    @retry(
-        stop=stop_after_attempt(3),
-        wait=wait_exponential(multiplier=2, min=4, max=30),
-    )
     def chat(
         self,
         prompt: str,
@@ -181,9 +135,6 @@ class GeminiClient:
 
         Returns:
             Generated text response
-
-        Raises:
-            httpx.HTTPError: If API call fails
         """
         # Build conversation history
         contents = []
@@ -192,28 +143,15 @@ class GeminiClient:
 
         contents.append({"role": "user", "parts": [{"text": prompt}]})
 
-        payload = {
-            "contents": contents,
-            "generationConfig": {
-                "temperature": 0.7,
-                "maxOutputTokens": 2048,
-            },
+        generation_config = {
+            "temperature": 0.7,
+            "maxOutputTokens": 2048,
         }
 
         logger.info(f"Chat request with {len(prompt)} char prompt")
 
-        # Use configured chat model if not specified
-        if model is None:
-            model = getattr(self.config, 'gemini_chat_model', 'gemini-2.0-flash')
-
-        response = self.client.post(
-            f"{self.base_url}/models/{model}:generateContent",
-            headers=self.headers,
-            content=orjson.dumps(payload),
-        )
-        response.raise_for_status()
-
-        data = response.json()
+        # Call via edge proxy
+        data = self.edge_client.llm_gateway(contents, generation_config)
 
         # Extract text from response
         try:
@@ -232,7 +170,4 @@ class GeminiClient:
             logger.error(f"Failed to parse Gemini response: {e}")
             return ""
 
-    def close(self):
-        """Close the HTTP client."""
-        self.client.close()
 

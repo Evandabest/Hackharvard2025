@@ -283,6 +283,8 @@ struct ContentView: View {
                         NotchHomeView(albumArtNamespace: albumArtNamespace)
                     case .shelf:
                         NotchShelfView()
+                    case .auditor:
+                        AuditorView()
                     }
                 }
             }
@@ -420,7 +422,8 @@ struct ContentView: View {
                 .onDrop(of: [.data], isTargeted: $vm.dragDetectorTargeting) { _ in true }
                 .onChange(of: vm.anyDropZoneTargeting) { _, isTargeted in
                     if isTargeted, vm.notchState == .closed {
-                        coordinator.currentView = .shelf
+                        // Don't change the current tab, just open the notch
+                        // User's last selected tab will be shown
                         doOpen()
                     } else if !isTargeted {
                         print("DROP EVENT", vm.dropEvent)
@@ -502,8 +505,8 @@ struct ContentView: View {
             }
 
             debounceWorkItem = debounce
-            // Add a small delay to debounce rapid mouse movements
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: debounce)
+            // Delay before auto-closing (doubled from 0.1 to 0.2 seconds)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: debounce)
         }
     }
 
@@ -586,3 +589,232 @@ struct FullScreenDropDelegate: DropDelegate {
         .environmentObject(vm)
         .frame(width: vm.notchSize.width, height: vm.notchSize.height)
 }
+
+// MARK: - Auditor View
+
+struct AuditorView: View {
+    @EnvironmentObject var vm: BoringViewModel
+    @StateObject var tvm = TrayDrop.shared
+    @State private var isProcessing = false
+    @State private var runId = ""
+
+    var body: some View {
+        HStack {
+            // Left side: Run Audit button (replaces AirDrop)
+            auditButton
+            // Right side: Drop zone panel (same as Shelf)
+            panel
+                .onDrop(of: [.data], isTargeted: $vm.dropZoneTargeting) { providers in
+                    vm.dropEvent = true
+                    DispatchQueue.global().async {
+                        tvm.load(providers)
+                    }
+                    return true
+                }
+        }
+    }
+
+    var auditButton: some View {
+        Rectangle()
+            .fill(.white.opacity(0.1))
+            .opacity(0.5)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .overlay { auditLabel }
+            .aspectRatio(1, contentMode: .fit)
+            .contentShape(Rectangle())
+    }
+    
+    var auditLabel: some View {
+        VStack(spacing: 8) {
+            Image(systemName: isProcessing ? "gearshape.2.fill" : "play.circle.fill")
+                .font(.system(size: 24))
+                .symbolEffect(.pulse, isActive: isProcessing)
+            
+            Text("Run Audit")
+                .font(.system(.headline, design: .rounded))
+        }
+        .foregroundStyle(.gray)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            runAudit()
+        }
+    }
+
+    var panel: some View {
+        RoundedRectangle(cornerRadius: 16)
+            .strokeBorder(style: StrokeStyle(lineWidth: 4, dash: [10]))
+            .foregroundStyle(.white.opacity(0.1))
+            .overlay {
+                content
+                    .padding()
+            }
+            .animation(vm.animation, value: tvm.items)
+            .animation(vm.animation, value: tvm.isLoading)
+    }
+
+    var content: some View {
+        Group {
+            if tvm.isEmpty {
+                VStack(spacing: 10) {
+                    Image(systemName: "doc.text.magnifyingglass")
+                        .symbolVariant(.fill)
+                        .symbolRenderingMode(.hierarchical)
+                        .foregroundStyle(.white, .gray)
+                        .imageScale(.large)
+                    
+                    Text("Drop PDF or CSV here")
+                        .foregroundStyle(.gray)
+                        .font(.system(.title3, design: .rounded))
+                        .fontWeight(.medium)
+                }
+            } else {
+                ScrollView(.horizontal) {
+                    HStack(spacing: spacing) {
+                        ForEach(tvm.items) { item in
+                            DropItemView(item: item)
+                        }
+                    }
+                    .padding(spacing)
+                }
+                .padding(-spacing)
+                .scrollIndicators(.never)
+            }
+        }
+    }
+    
+    private var spacing: CGFloat { 8 }
+    
+    private func runAudit() {
+        guard !tvm.isEmpty else { 
+            print("❌ No files to audit")
+            return 
+        }
+        
+        Task {
+            isProcessing = true
+            print("🚀 Starting audit process...")
+            
+            do {
+                // Get the first file from the tray
+                guard let firstItem = tvm.items.first else { 
+                    print("❌ No file found in tray")
+                    return 
+                }
+                let fileURL = firstItem.storageURL
+                print("📁 Processing file: \(fileURL.lastPathComponent)")
+                
+                let response = try await uploadFile(fileURL)
+                print("✅ Upload successful: \(response.runId)")
+                runId = response.runId
+                
+                // Clear the tray after successful upload
+                DispatchQueue.main.async {
+                    tvm.removeAll()
+                }
+                
+                // Reset after 3 seconds
+                try await Task.sleep(for: .seconds(3))
+                isProcessing = false
+                runId = ""
+                print("🎯 Audit process completed")
+                
+            } catch {
+                print("❌ Audit failed: \(error)")
+                print("❌ Error details: \(error.localizedDescription)")
+                isProcessing = false
+            }
+        }
+    }
+    
+    private func uploadFile(_ fileURL: URL) async throws -> UploadResponse {
+        // Determine content type
+        let contentType = fileURL.pathExtension.lowercased() == "csv" ? "text/csv" : "application/pdf"
+        print("📄 Content type: \(contentType)")
+        
+        // Step 1: Create upload
+        print("🔄 Step 1: Creating upload request...")
+        let createURL = URL(string: "https://auditor-edge.evanhaque1.workers.dev/uploads/create")!
+        var request = URLRequest(url: createURL)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let body: [String: Any] = [
+            "filename": fileURL.lastPathComponent,
+            "contentType": contentType,
+            "tenantId": "notch_app_user"
+        ]
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        // Check response status
+        if let httpResponse = response as? HTTPURLResponse {
+            print("📡 Upload create response: \(httpResponse.statusCode)")
+            if httpResponse.statusCode != 200 {
+                let errorText = String(data: data, encoding: .utf8) ?? "Unknown error"
+                print("❌ Upload create failed: \(errorText)")
+                throw NSError(domain: "UploadError", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Failed to create upload: \(errorText)"])
+            }
+        }
+        
+        let uploadResp = try JSONDecoder().decode(UploadResponse.self, from: data)
+        print("✅ Upload created: \(uploadResp.runId)")
+        
+        // Step 2: Upload to R2
+        print("🔄 Step 2: Uploading to R2...")
+        let fileData = try Data(contentsOf: fileURL)
+        print("📦 File size: \(fileData.count) bytes")
+        
+        var r2Request = URLRequest(url: URL(string: uploadResp.r2PutUrl)!)
+        r2Request.httpMethod = "PUT"
+        r2Request.setValue(contentType, forHTTPHeaderField: "Content-Type")
+        r2Request.httpBody = fileData
+        
+        let (r2Data, r2Response) = try await URLSession.shared.data(for: r2Request)
+        
+        // Check R2 upload response
+        if let httpResponse = r2Response as? HTTPURLResponse {
+            print("📡 R2 upload response: \(httpResponse.statusCode)")
+            if httpResponse.statusCode != 200 {
+                let errorText = String(data: r2Data, encoding: .utf8) ?? "Unknown error"
+                print("❌ R2 upload failed: \(errorText)")
+                throw NSError(domain: "UploadError", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Failed to upload to R2: \(errorText)"])
+            }
+        }
+        print("✅ R2 upload successful")
+        
+        // Step 3: Enqueue for processing
+        print("🔄 Step 3: Enqueuing job for processing...")
+        let enqueueURL = URL(string: "https://auditor-edge.evanhaque1.workers.dev/runs/\(uploadResp.runId)/enqueue")!
+        var enqueueRequest = URLRequest(url: enqueueURL)
+        enqueueRequest.httpMethod = "POST"
+        enqueueRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let enqueueBody: [String: Any] = ["r2Key": uploadResp.r2Key]
+        enqueueRequest.httpBody = try JSONSerialization.data(withJSONObject: enqueueBody)
+        
+        let (enqueueData, enqueueResponse) = try await URLSession.shared.data(for: enqueueRequest)
+        
+        // Check if enqueue was successful
+        if let httpResponse = enqueueResponse as? HTTPURLResponse {
+            print("📡 Enqueue response: \(httpResponse.statusCode)")
+            if httpResponse.statusCode != 200 {
+                let errorText = String(data: enqueueData, encoding: .utf8) ?? "Unknown error"
+                print("❌ Enqueue failed: \(errorText)")
+                throw NSError(domain: "UploadError", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Failed to enqueue job: \(errorText)"])
+            }
+        }
+        
+        let enqueueResponseText = String(data: enqueueData, encoding: .utf8) ?? "No response"
+        print("✅ Job enqueued successfully: \(enqueueResponseText)")
+        
+        return uploadResp
+    }
+}
+
+struct UploadResponse: Codable {
+    let runId: String
+    let r2PutUrl: String
+    let r2Key: String
+}
+

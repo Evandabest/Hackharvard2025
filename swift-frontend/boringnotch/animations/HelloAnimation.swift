@@ -1,9 +1,3 @@
-//
-//  HelloAnimation.swift
-//  boringNotch
-//
-//  Created by Harsh Vardhan  Goswami  on 08/08/24.
-//
 
 import SwiftUI
 

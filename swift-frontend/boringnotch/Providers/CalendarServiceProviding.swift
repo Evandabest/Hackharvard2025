@@ -1,11 +1,4 @@
-//
-//  CalendarServiceProvider.swift
-//  Calendr
-//
-//  Created by Paker on 31/12/20.
-//  Original source: Original source: https://github.com/pakerwreah/Calendr
-//  Modified by Alexander on 08/06/25
-//
+
 
 import Foundation
 @preconcurrency import EventKit

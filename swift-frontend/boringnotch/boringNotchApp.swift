@@ -30,6 +30,14 @@ struct DynamicNotchApp: App {
 
     var body: some Scene {
         MenuBarExtra("boring.notch", systemImage: "sparkle", isInserted: $showMenuBarIcon) {
+            Button("Open Auditor") {
+                let coordinator = BoringViewCoordinator.shared
+                coordinator.currentView = .auditor
+                // Trigger notch to open if closed
+                NotificationCenter.default.post(name: NSNotification.Name("BoringNotchShouldOpen"), object: nil)
+            }
+            .keyboardShortcut(KeyEquivalent("a"), modifiers: .command)
+            Divider()
             Button("Settings") {
                 SettingsWindowController.shared.showWindow()
             }

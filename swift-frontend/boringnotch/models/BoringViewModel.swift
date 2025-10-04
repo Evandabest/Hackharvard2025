@@ -185,13 +185,8 @@ class BoringViewModel: NSObject, ObservableObject {
             self.notchState = .closed
         }
 
-        // Set the current view to shelf if it contains files and the user enables openShelfByDefault
-        // Otherwise, if the user has not enabled openLastShelfByDefault, set the view to home
-        if !TrayDrop.shared.isEmpty && Defaults[.openShelfByDefault] {
-            coordinator.currentView = .shelf
-        } else if !coordinator.openLastTabByDefault {
-            coordinator.currentView = .home
-        }
+        // Keep the current tab selected - don't reset on close
+        // User's last selection is remembered via @AppStorage in BoringViewCoordinator
     }
 
     func closeHello() {

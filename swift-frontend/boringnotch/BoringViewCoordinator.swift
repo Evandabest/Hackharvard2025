@@ -50,7 +50,33 @@ class BoringViewCoordinator: ObservableObject {
     static let shared = BoringViewCoordinator()
     var notifier: TheBoringWorkerNotifier = .init()
 
-    @Published var currentView: NotchViews = .home
+    @Published var currentView: NotchViews = .home {
+        didSet {
+            // Save the selected tab
+            lastSelectedTab = currentView
+        }
+    }
+    
+    @AppStorage("lastSelectedTab") private var lastSelectedTabRaw: String = "home"
+    
+    private var lastSelectedTab: NotchViews {
+        get {
+            switch lastSelectedTabRaw {
+            case "home": return .home
+            case "shelf": return .shelf
+            case "auditor": return .auditor
+            default: return .home
+            }
+        }
+        set {
+            switch newValue {
+            case .home: lastSelectedTabRaw = "home"
+            case .shelf: lastSelectedTabRaw = "shelf"
+            case .auditor: lastSelectedTabRaw = "auditor"
+            }
+        }
+    }
+    
     private var sneakPeekDispatch: DispatchWorkItem?
     private var expandingViewDispatch: DispatchWorkItem?
 
@@ -64,7 +90,7 @@ class BoringViewCoordinator: ObservableObject {
             if !alwaysShowTabs {
                 openLastTabByDefault = false
                 if TrayDrop.shared.isEmpty || !Defaults[.openShelfByDefault] {
-                    currentView = .home
+                    // Don't change view if user manually selected a tab
                 }
             }
         }
@@ -98,6 +124,8 @@ class BoringViewCoordinator: ObservableObject {
     private init() {
         selectedScreen = preferredScreen
         notifier = TheBoringWorkerNotifier()
+        // Restore last selected tab
+        currentView = lastSelectedTab
     }
 
     func setupWorkersNotificationObservers() {

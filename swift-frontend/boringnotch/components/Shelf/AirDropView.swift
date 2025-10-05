@@ -9,7 +9,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct AirDropView: View {
-    @EnvironmentObject var vm: BoringViewModel
+    @EnvironmentObject var vm: HaloAuditViewModel
     
     @State var trigger: UUID = .init()
     @State var targeting = false

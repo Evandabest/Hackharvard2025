@@ -129,8 +129,8 @@ struct SettingsView: View {
 
 struct GeneralSettings: View {
     @State private var screens: [String] = NSScreen.screens.compactMap { $0.localizedName }
-    @EnvironmentObject var vm: BoringViewModel
-    @ObservedObject var coordinator = BoringViewCoordinator.shared
+    @EnvironmentObject var vm: HaloAuditViewModel
+    @ObservedObject var coordinator = HaloAuditViewCoordinator.shared
 
     @Default(.mirrorShape) var mirrorShape
     @Default(.showEmojis) var showEmojis
@@ -422,10 +422,10 @@ struct Downloads: View {
 }
 
 struct HUD: View {
-    @EnvironmentObject var vm: BoringViewModel
+    @EnvironmentObject var vm: HaloAuditViewModel
     @Default(.inlineHUD) var inlineHUD
     @Default(.enableGradient) var enableGradient
-    @ObservedObject var coordinator = BoringViewCoordinator.shared
+    @ObservedObject var coordinator = HaloAuditViewCoordinator.shared
     var body: some View {
         Form {
             Section {
@@ -469,7 +469,7 @@ struct HUD: View {
 struct Media: View {
     @Default(.waitInterval) var waitInterval
     @Default(.mediaController) var mediaController
-    @ObservedObject var coordinator = BoringViewCoordinator.shared
+    @ObservedObject var coordinator = HaloAuditViewCoordinator.shared
     @Default(.hideNotchOption) var hideNotchOption
     @Default(.enableSneakPeek) private var enableSneakPeek
     @Default(.sneakPeekStyles) var sneakPeekStyles
@@ -550,7 +550,7 @@ struct Media: View {
                 selection: $hideNotchOption,
                 label:
                     HStack {
-                        Text("Hide BoringNotch Options")
+                        Text("Hide HaloAudit Options")
                         customBadge(text: "Beta")
                     }
             ) {
@@ -703,18 +703,6 @@ struct About: View {
                 HStack(spacing: 30) {
                     Spacer(minLength: 0)
                     Button {
-                        NSWorkspace.shared.open(sponsorPage)
-                    } label: {
-                        VStack(spacing: 5) {
-                            Image(systemName: "cup.and.saucer.fill")
-                                .imageScale(.large)
-                            Text("Support Us")
-                                .foregroundStyle(.white)
-                        }
-                        .contentShape(Rectangle())
-                    }
-                    Spacer(minLength: 0)
-                    Button {
                         NSWorkspace.shared.open(productPage)
                     } label: {
                         VStack(spacing: 5) {
@@ -733,7 +721,7 @@ struct About: View {
             }
             VStack(spacing: 0) {
                 Divider()
-                Text("Made with 🫶🏻 by not so boring not.people")
+                Text("Made with 🫶🏻 by HaloAudit Team")
                     .foregroundStyle(.secondary)
                     .padding(.top, 5)
                     .padding(.bottom, 7)
@@ -911,7 +899,7 @@ struct Extensions: View {
 }
 
 struct Appearance: View {
-    @ObservedObject var coordinator = BoringViewCoordinator.shared
+    @ObservedObject var coordinator = HaloAuditViewCoordinator.shared
     @Default(.mirrorShape) var mirrorShape
     @Default(.sliderColor) var sliderColor
     @Default(.useMusicVisualizer) var useMusicVisualizer

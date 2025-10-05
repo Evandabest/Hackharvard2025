@@ -13,7 +13,7 @@ import SwiftUI
 // MARK: - Music Player Components
 
 struct MusicPlayerView: View {
-    @EnvironmentObject var vm: BoringViewModel
+    @EnvironmentObject var vm: HaloAuditViewModel
     let albumArtNamespace: Namespace.ID
     let showShuffleAndRepeat: Bool
 
@@ -27,7 +27,7 @@ struct MusicPlayerView: View {
 
 struct AlbumArtView: View {
     @ObservedObject var musicManager = MusicManager.shared
-    @ObservedObject var vm: BoringViewModel
+    @ObservedObject var vm: HaloAuditViewModel
     let albumArtNamespace: Namespace.ID
 
     var body: some View {
@@ -239,10 +239,10 @@ struct MusicControlsView: View {
 // MARK: - Main View
 
 struct NotchHomeView: View {
-    @EnvironmentObject var vm: BoringViewModel
+    @EnvironmentObject var vm: HaloAuditViewModel
     @ObservedObject var webcamManager = WebcamManager.shared
     @ObservedObject var batteryModel = BatteryStatusViewModel.shared
-    @ObservedObject var coordinator = BoringViewCoordinator.shared
+    @ObservedObject var coordinator = HaloAuditViewCoordinator.shared
     let albumArtNamespace: Namespace.ID
 
     var body: some View {

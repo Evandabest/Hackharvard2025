@@ -44,7 +44,7 @@ class MusicManager: ObservableObject {
     @Published var playbackRate: Double = 1
     @Published var isShuffled: Bool = false
     @Published var repeatMode: RepeatMode = .off
-    @ObservedObject var coordinator = BoringViewCoordinator.shared
+    @ObservedObject var coordinator = HaloAuditViewCoordinator.shared
     @Published var usingAppIconForArtwork: Bool = false
 
     private var artworkData: Data? = nil

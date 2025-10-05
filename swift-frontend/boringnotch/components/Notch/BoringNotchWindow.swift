@@ -1,13 +1,13 @@
 //
-//  BoringNotchWindow.swift
-//  boringNotch
+//  HaloAuditWindow.swift
+//  HaloAudit
 //
 //  Created by Harsh Vardhan  Goswami  on 06/08/24.
 //
 
 import Cocoa
 
-class BoringNotchWindow: NSPanel {
+class HaloAuditWindow: NSPanel {
     override init(
         contentRect: NSRect,
         styleMask: NSWindow.StyleMask,

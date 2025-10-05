@@ -1,6 +1,6 @@
 //
-//  BoringHeader.swift
-//  boringNotch
+//  HaloAuditHeader.swift
+//  HaloAudit
 //
 //  Created by Harsh Vardhan  Goswami  on 04/08/24.
 //
@@ -8,10 +8,10 @@
 import Defaults
 import SwiftUI
 
-struct BoringHeader: View {
-    @EnvironmentObject var vm: BoringViewModel
+struct HaloAuditHeader: View {
+    @EnvironmentObject var vm: HaloAuditViewModel
     @ObservedObject var batteryModel = BatteryStatusViewModel.shared
-    @ObservedObject var coordinator = BoringViewCoordinator.shared
+    @ObservedObject var coordinator = HaloAuditViewCoordinator.shared
     @StateObject var tvm = TrayDrop.shared
     var body: some View {
         HStack(spacing: 0) {
@@ -98,5 +98,5 @@ struct BoringHeader: View {
 }
 
 #Preview {
-    BoringHeader().environmentObject(BoringViewModel())
+    HaloAuditHeader().environmentObject(HaloAuditViewModel())
 }

@@ -10,7 +10,7 @@ import SwiftUI
 import Defaults
 
 struct SystemItemButton: View {
-    @EnvironmentObject var vm: BoringViewModel
+    @EnvironmentObject var vm: HaloAuditViewModel
     @State var icon: String = "gear"
     var onTap: () -> Void
     @State var label: String?
@@ -68,8 +68,8 @@ func logout() {
 }
 
 struct BoringSystemTiles: View {
-    @EnvironmentObject var vm: BoringViewModel
-    @ObservedObject var coordinator = BoringViewCoordinator.shared
+    @EnvironmentObject var vm: HaloAuditViewModel
+    @ObservedObject var coordinator = HaloAuditViewCoordinator.shared
 
     struct ItemButton {
         var icon: String

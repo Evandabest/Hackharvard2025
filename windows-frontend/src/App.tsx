@@ -19,7 +19,7 @@ const App: React.FC = () => {
   return (
     <div className="w-full h-full bg-transparent flex justify-center">
       <motion.div
-        className="w-[540px] bg-black bg-opacity-80 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden"
+        className="w-[540px] bg-black bg-opacity-80 backdrop-blur-md shadow-2xl overflow-hidden"
         animate={{
           height: isOpen ? "140px" : "36px",
         }}
@@ -45,13 +45,13 @@ const App: React.FC = () => {
             className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full flex justify-center cursor-pointer h-6"
             onClick={handleToggle}
           >
-            <motion.div whileHover={{ scale: 1.2 }}>
+            {/* <motion.div whileHover={{ scale: 1.2 }}>
               <ChevronDown
                 className={`w-6 h-6 text-gray-500 transition-transform ${
                   isOpen ? "rotate-180" : ""
                 }`}
               />
-            </motion.div>
+            </motion.div> */}
           </div>
         </div>
       </motion.div>

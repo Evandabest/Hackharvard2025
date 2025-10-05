@@ -145,28 +145,42 @@ struct AuditorTestView: View {
     }
     
     private func connectWebSocket(runId: String) async {
+        print("🔥🔥🔥 AuditorTestButton connectWebSocket() called with runId: \(runId) 🔥🔥🔥")
+        
         // Create WebSocket connection
         guard let url = URL(string: "wss://auditor-edge.evanhaque1.workers.dev/ws/run/\(runId)") else {
+            print("❌ AuditorTestButton: Invalid WebSocket URL")
             return
         }
         
+        print("🔄 AuditorTestButton: Connecting to WebSocket: \(url)")
+        print("🔄 AuditorTestButton: Run ID: \(runId)")
+        
         let webSocketTask = URLSession.shared.webSocketTask(with: url)
+        print("🔄 AuditorTestButton: WebSocket task created: \(webSocketTask != nil)")
+        
         webSocketTask.resume()
+        print("✅ AuditorTestButton: WebSocket connected")
         
         // Listen for one message
+        print("🔄 AuditorTestButton: Starting to receive messages...")
         webSocketTask.receive { result in
+            print("🔄 AuditorTestButton: Received result: \(result)")
             switch result {
             case .success(let message):
+                print("✅ AuditorTestButton: Message received successfully")
                 if case .string(let text) = message {
-                    print("📨 WebSocket message: \(text)")
+                    print("📨 AuditorTestButton WebSocket message: \(text)")
                 }
             case .failure(let error):
-                print("WebSocket error: \(error)")
+                print("❌ AuditorTestButton WebSocket error: \(error)")
             }
         }
         
         // Close after 2 seconds
+        print("🔄 AuditorTestButton: Waiting 2 seconds before closing...")
         try? await Task.sleep(for: .seconds(2))
+        print("🔌 AuditorTestButton: Closing WebSocket connection")
         webSocketTask.cancel(with: .goingAway, reason: nil)
     }
 }

@@ -40,6 +40,15 @@ class AuditorViewModel: ObservableObject {
             }
             .store(in: &cancellables)
         
+        webSocket.$isComplete
+            .sink { [weak self] isComplete in
+                if isComplete {
+                    self?.uploadState = .completed
+                    self?.statusMessage = "Audit complete!"
+                }
+            }
+            .store(in: &cancellables)
+        
         webSocket.$error
             .compactMap { $0 }
             .sink { [weak self] error in
@@ -106,7 +115,7 @@ class AuditorViewModel: ObservableObject {
             
             // Step 4: Connect WebSocket for real-time updates
             await MainActor.run {
-                webSocket.connect(runId: uploadResponse.runId)
+                webSocket.connect(to: uploadResponse.runId)
             }
             
             // Step 5: Poll for completion (optional, WebSocket is primary)
@@ -142,6 +151,31 @@ class AuditorViewModel: ObservableObject {
                 }
             } catch {
                 print("Status poll error: \(error)")
+            }
+        }
+    }
+    
+    // MARK: - Report
+    
+    func openReport() async {
+        guard let runId = currentRun?.runId else {
+            print("No run ID available")
+            return
+        }
+        
+        do {
+            let reportResponse = try await api.getReportUrl(runId: runId)
+            
+            // Open the report URL in the default browser
+            if let url = URL(string: reportResponse.reportUrl) {
+                await MainActor.run {
+                    NSWorkspace.shared.open(url)
+                }
+            }
+        } catch {
+            print("Failed to get report URL: \(error)")
+            await MainActor.run {
+                statusMessage = "Failed to open report: \(error.localizedDescription)"
             }
         }
     }

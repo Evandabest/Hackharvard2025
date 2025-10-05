@@ -177,7 +177,7 @@ struct BoringBatteryView: View {
     @State private var isPressed: Bool = false
     @State private var isHoveringPopover: Bool = false
 
-    @EnvironmentObject var vm: BoringViewModel
+    @EnvironmentObject var vm: HaloAuditViewModel
 
     var body: some View {
         HStack {

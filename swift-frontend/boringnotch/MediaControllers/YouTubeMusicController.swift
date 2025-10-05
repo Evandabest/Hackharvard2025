@@ -57,7 +57,7 @@ class YouTubeMusicController: MediaControllerProtocol {
     }
     
     private func getAccessToken() async -> Bool {
-        guard let url = URL(string: "\(baseURL)/auth/boringNotch") else {
+        guard let url = URL(string: "\(baseURL)/auth/HaloAudit") else {
             return false
         }
         

@@ -1,4 +1,4 @@
-# Auditor Feature for Boring Notch
+# Auditor Feature for HaloAudit
 
 ## 📱 What's Included
 

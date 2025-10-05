@@ -1,0 +1,76 @@
+{
+  "name": "haloaudit-windows",
+  "version": "1.0.0",
+  "description": "HaloAudit - AI-powered document auditor for Windows",
+  "main": "dist/main.js",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:renderer\" \"npm run dev:main\"",
+    "dev:renderer": "vite",
+    "dev:main": "tsc -p tsconfig.main.json && electron dist/main.js",
+    "build": "npm run build:renderer && npm run build:main",
+    "build:renderer": "vite build",
+    "build:main": "tsc -p tsconfig.main.json",
+    "dist": "npm run build && electron-builder",
+    "dist:win": "npm run build && electron-builder --win",
+    "pack": "npm run build && electron-builder --dir",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "keywords": [
+    "electron",
+    "audit",
+    "ai",
+    "document",
+    "windows"
+  ],
+  "author": "HaloAudit Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "concurrently": "^8.2.2",
+    "electron": "^28.1.0",
+    "electron-builder": "^24.9.1",
+    "eslint": "^8.55.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  },
+  "dependencies": {
+    "autoprefixer": "^10.4.16",
+    "clsx": "^2.0.0",
+    "framer-motion": "^12.23.22",
+    "lucide-react": "^0.303.0",
+    "postcss": "^8.4.32",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-dropzone": "^14.2.3",
+    "tailwindcss": "^3.4.0"
+  },
+  "build": {
+    "appId": "com.haloaudit.windows",
+    "productName": "HaloAudit",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "node_modules/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+}

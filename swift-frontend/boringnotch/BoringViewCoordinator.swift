@@ -1,5 +1,5 @@
 //
-//  BoringViewCoordinator.swift
+//  HaloAuditViewCoordinator.swift
 //  boringNotch
 //
 //  Created by Alexander on 2024-11-20.
@@ -46,8 +46,8 @@ struct ExpandedItem {
     var browser: BrowserType = .chromium
 }
 
-class BoringViewCoordinator: ObservableObject {
-    static let shared = BoringViewCoordinator()
+class HaloAuditViewCoordinator: ObservableObject {
+    static let shared = HaloAuditViewCoordinator()
     var notifier: TheBoringWorkerNotifier = .init()
 
     @Published var currentView: NotchViews = .home {

@@ -49,6 +49,11 @@ struct Finding: Codable, Identifiable {
     let createdAt: String?
 }
 
+struct ReportUrlResponse: Codable {
+    let reportUrl: String
+    let reportKey: String
+}
+
 enum AuditorError: LocalizedError {
     case invalidURL
     case invalidResponse
@@ -176,6 +181,26 @@ class AuditorAPIClient: ObservableObject {
         }
         
         return try JSONDecoder().decode(RunStatus.self, from: data)
+    }
+    
+    // MARK: - Report URL
+    
+    func getReportUrl(runId: String) async throws -> ReportUrlResponse {
+        guard let url = URL(string: "\(baseURL)/runs/\(runId)/report") else {
+            throw AuditorError.invalidURL
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        
+        let (data, response) = try await session.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw AuditorError.invalidResponse
+        }
+        
+        return try JSONDecoder().decode(ReportUrlResponse.self, from: data)
     }
 }
 

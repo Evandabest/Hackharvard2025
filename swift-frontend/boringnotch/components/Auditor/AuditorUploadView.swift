@@ -158,7 +158,7 @@ struct AuditorUploadView: View {
                     .multilineTextAlignment(.center)
             }
             
-            if webSocket.isConnected {
+            if webSocket.connectionStatus == .connected {
                 HStack(spacing: 4) {
                     Circle()
                         .fill(Color.green)
@@ -184,9 +184,19 @@ struct AuditorUploadView: View {
                 .font(.title2)
                 .bold()
             
-            Text(viewModel.statusMessage)
-                .font(.caption)
-                .foregroundColor(.secondary)
+            if let summary = webSocket.summary, !summary.isEmpty {
+                Text(summary)
+                    .font(.body)
+                    .foregroundColor(.primary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+            }
+            
+            if webSocket.findingsCount > 0 {
+                Text("\(webSocket.findingsCount) findings")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
             
             if let runId = viewModel.currentRun?.runId {
                 Text("Run ID: \(runId)")
@@ -195,10 +205,24 @@ struct AuditorUploadView: View {
                     .textSelection(.enabled)
             }
             
-            Button("Upload Another") {
-                viewModel.reset()
+            HStack(spacing: 12) {
+                Button {
+                    Task {
+                        await viewModel.openReport()
+                    }
+                } label: {
+                    HStack {
+                        Image(systemName: "doc.text.magnifyingglass")
+                        Text("Show Report")
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+                
+                Button("Upload Another") {
+                    viewModel.reset()
+                }
+                .buttonStyle(.bordered)
             }
-            .buttonStyle(.borderedProminent)
         }
         .padding(40)
     }

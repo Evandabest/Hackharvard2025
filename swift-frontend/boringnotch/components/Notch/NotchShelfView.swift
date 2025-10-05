@@ -2,7 +2,7 @@
 import SwiftUI
 
 struct NotchShelfView: View {
-    @EnvironmentObject var vm: BoringViewModel
+    @EnvironmentObject var vm: HaloAuditViewModel
     @StateObject var tvm = TrayDrop.shared
 
     var body: some View {

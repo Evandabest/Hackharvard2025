@@ -1,6 +1,6 @@
 //
-//  BoringViewModel.swift
-//  boringNotch
+//  HaloAuditViewModel.swift
+//  HaloAudit
 //
 //  Created by Harsh Vardhan  Goswami  on 04/08/24.
 //
@@ -10,8 +10,8 @@ import Defaults
 import SwiftUI
 import TheBoringWorkerNotifier
 
-class BoringViewModel: NSObject, ObservableObject {
-    @ObservedObject var coordinator = BoringViewCoordinator.shared
+class HaloAuditViewModel: NSObject, ObservableObject {
+    @ObservedObject var coordinator = HaloAuditViewCoordinator.shared
     @ObservedObject var detector = FullscreenMediaDetector.shared
 
     let animationLibrary: BoringAnimations = .init()
@@ -186,7 +186,7 @@ class BoringViewModel: NSObject, ObservableObject {
         }
 
         // Keep the current tab selected - don't reset on close
-        // User's last selection is remembered via @AppStorage in BoringViewCoordinator
+        // User's last selection is remembered via @AppStorage in HaloAuditViewCoordinator
     }
 
     func closeHello() {

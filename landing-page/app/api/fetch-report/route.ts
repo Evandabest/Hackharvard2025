@@ -158,7 +158,7 @@ export async function GET(request: NextRequest) {
       
       // Count findings from the markdown
       const findingsSection = reportContent.match(/## Findings \(\d+\)([\s\S]*?)## Analysis Metadata/)
-      let findings = []
+      let findings: any[] = []
       
       if (findingsSection && !findingsSection[1].includes('_No significant findings detected._')) {
         // Parse findings if any exist

@@ -35,7 +35,7 @@ const placeMainAtTopCenter = () => {
 const placeEdgeActivator = () => {
   if (!edgeWindow || !mainWindow) return;
   const notchWidth = mainWindow.getBounds().width;
-  const width = Math.max(320, notchWidth + 40);
+  const width = Math.max(380, notchWidth + 60);
   const bounds = topCenterFor(width, 2);
   edgeWindow.setBounds({ ...bounds, y: bounds.y - 1 });
 };
@@ -56,7 +56,7 @@ const revealNotch = async () => {
   try { (mainWindow as any).setBackgroundMaterial?.('acrylic'); } catch {}
 
   animating = true;
-  const steps = 8; const dt = 12;
+  const steps = 12; const dt = 12;
   for (let i = 1; i <= steps; i++) {
     await new Promise(r => setTimeout(r, dt));
     const y = Math.round(startY + (endY - startY) * (i / steps));
@@ -101,7 +101,7 @@ function createMainWindow() {
   if (isWin) app.setAppUserModelId('com.example.notch');
 
   mainWindow = new BrowserWindow({
-    width: 420, height: 72, minWidth: 360, maxWidth: 560, minHeight: 56, maxHeight: 96,
+    width: 520, height: 140, minWidth: 480, maxWidth: 640, minHeight: 120, maxHeight: 168,
     frame: false, transparent: true, resizable: false, alwaysOnTop: true,
     skipTaskbar: true, hasShadow: false, focusable: true, backgroundColor: '#00000000',
     titleBarStyle: isMac ? 'hidden' : 'default',

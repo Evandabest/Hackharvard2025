@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { AuditorView } from './components/AuditorView';
-import { ChevronDown } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { AuditorView } from "./components/AuditorView";
+import { ChevronDown } from "lucide-react";
 
 const App: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,13 +17,13 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="w-screen h-screen bg-transparent flex justify-center pt-1">
+    <div className="w-full h-full bg-transparent flex justify-center">
       <motion.div
-        className="w-[550px] bg-black bg-opacity-80 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden"
+        className="w-[540px] bg-black bg-opacity-80 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden"
         animate={{
-          height: isOpen ? '320px' : '36px',
+          height: isOpen ? "140px" : "36px",
         }}
-        transition={{ type: 'spring', damping: 20, stiffness: 150 }}
+        transition={{ type: "spring", damping: 20, stiffness: 150 }}
       >
         <div className="w-full h-full relative">
           {/* Content when open */}
@@ -41,14 +41,14 @@ const App: React.FC = () => {
           </AnimatePresence>
 
           {/* Handle to close/open */}
-          <div 
+          <div
             className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full flex justify-center cursor-pointer h-6"
             onClick={handleToggle}
           >
             <motion.div whileHover={{ scale: 1.2 }}>
-               <ChevronDown 
+              <ChevronDown
                 className={`w-6 h-6 text-gray-500 transition-transform ${
-                  isOpen ? 'rotate-180' : ''
+                  isOpen ? "rotate-180" : ""
                 }`}
               />
             </motion.div>

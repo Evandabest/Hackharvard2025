@@ -36,3 +36,5 @@ $RECYCLE.BIN/
 .env.production.local
 
 node_modules/
+
+dist/

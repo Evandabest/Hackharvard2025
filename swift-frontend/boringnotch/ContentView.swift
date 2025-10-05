@@ -866,7 +866,7 @@ struct FullScreenDropDelegate: DropDelegate {
                     }
             }
             
-            // Show Report button in green bar - expands from bottom
+            // Show Report button in green bar - extends notch downward
             // Only show if we have a report key (meaning the report is actually ready)
             if isComplete && reportKey != nil {
                 showReportBar
@@ -988,8 +988,17 @@ struct FullScreenDropDelegate: DropDelegate {
             .buttonStyle(PlainButtonStyle())
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+        .padding(.vertical, 6)
+        .frame(maxWidth: .infinity)
         .background(Color.green)
+        .clipShape(
+            UnevenRoundedRectangle(
+                topLeadingRadius: 0,
+                bottomLeadingRadius: 12,
+                bottomTrailingRadius: 12,
+                topTrailingRadius: 0
+            )
+        )
         .transition(.move(edge: .bottom).combined(with: .opacity))
         .animation(.easeInOut(duration: 0.3), value: isComplete)
     }

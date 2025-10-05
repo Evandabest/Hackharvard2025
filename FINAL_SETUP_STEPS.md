@@ -17,6 +17,7 @@
 3. Copy the key (starts with `AIzaSy...`)
 
 **Then update `agent/.env` line 2:**
+
 ```bash
 GOOGLE_API_KEY=AIzaSy...paste-here...
 ```
@@ -53,6 +54,7 @@ Endpoint for S3 Clients: https://abc123.r2.cloudflarestorage.com
 ```
 
 **Update `agent/.env` lines 9-11:**
+
 ```bash
 R2_ENDPOINT=https://abc123.r2.cloudflarestorage.com
 R2_ACCESS_KEY_ID=abc123xyz789...
@@ -74,9 +76,10 @@ make dev
 ```
 
 **You should see:**
+
 ```
 INFO: Configuration loaded successfully
-INFO: Pipeline runner initialized  
+INFO: Pipeline runner initialized
 INFO: Health server listening on port 8080
 INFO: Starting edge job pull loop
 ```
@@ -103,6 +106,7 @@ curl -X POST https://auditor-edge.evanhaque1.workers.dev/jobs/enqueue \
 ### **Test 2: Check Agent Picked It Up**
 
 Watch your agent logs - within 1 second you should see:
+
 ```
 INFO: Pulled 1 jobs from edge queue
 INFO: Processing job job_...
@@ -115,6 +119,7 @@ It will fail (no actual PDF in R2), but you'll see it working!
 ## 📝 **Your Complete Configuration**
 
 ### **Backend** (`backend/wrangler.toml`)
+
 ✅ Already configured correctly!
 
 ### **Agent** (`agent/.env`)
@@ -138,11 +143,13 @@ R2_SECRET_ACCESS_KEY=...
 ## 🎯 **Summary**
 
 **Your EDGE_BASE_URL is:**
+
 ```
 https://auditor-edge.evanhaque1.workers.dev
 ```
 
 **To complete setup, you need:**
+
 1. ✏️ Google API Key → Update `agent/.env` line 2
 2. ✏️ R2 credentials → Update `agent/.env` lines 9-11
 3. 🚀 Run `make dev` in agent folder
@@ -158,4 +165,3 @@ That's it! 🎉
 - **R2 API Tokens**: https://dash.cloudflare.com/99b429887ccf20faca6cd78dbeb0a207/r2/api-tokens
 
 Once you have those 3 things, you're done! 🚀
-

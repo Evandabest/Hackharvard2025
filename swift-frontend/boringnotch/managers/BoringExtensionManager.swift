@@ -8,9 +8,9 @@
 import Foundation
 import SwiftUI
 
-var clipboardExtension: String = "theboringteam.TheBoringClipboard"
-var hudExtension: String = "theboringteam.TheBoringHUDs"
-var downloadManagerExtension: String = "theboringteam.TheBoringDownloadManager"
+var clipboardExtension: String = "com.haloaudit.Clipboard"
+var hudExtension: String = "com.haloaudit.HUDs"
+var downloadManagerExtension: String = "com.haloaudit.DownloadManager"
 
 struct Extension: Identifiable, Hashable {
     var id = UUID()

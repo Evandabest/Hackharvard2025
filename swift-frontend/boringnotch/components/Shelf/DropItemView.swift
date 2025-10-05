@@ -11,8 +11,8 @@ import UniformTypeIdentifiers
 
 struct DropItemView: View {
     let item: TrayDrop.DropItem
-    @EnvironmentObject var vm: BoringViewModel
-    @ObservedObject var coordinator = BoringViewCoordinator.shared
+    @EnvironmentObject var vm: HaloAuditViewModel
+    @ObservedObject var coordinator = HaloAuditViewCoordinator.shared
     @StateObject var tvm = TrayDrop.shared
 
     @State var hover = false

@@ -211,10 +211,10 @@ class SimpleWebSocketManager: ObservableObject {
 }
 
 struct ContentView: View {
-    @EnvironmentObject var vm: BoringViewModel
+    @EnvironmentObject var vm: HaloAuditViewModel
     @ObservedObject var webcamManager = WebcamManager.shared
 
-    @ObservedObject var coordinator = BoringViewCoordinator.shared
+    @ObservedObject var coordinator = HaloAuditViewCoordinator.shared
     @ObservedObject var musicManager = MusicManager.shared
     @ObservedObject var batteryModel = BatteryStatusViewModel.shared
 
@@ -432,9 +432,9 @@ struct ContentView: View {
                       } else if (!coordinator.expandingView.show || coordinator.expandingView.type == .music) && vm.notchState == .closed && (musicManager.isPlaying || !musicManager.isPlayerIdle) && coordinator.musicLiveActivityEnabled && !vm.hideOnClosed {
                           MusicLiveActivity()
                       } else if !coordinator.expandingView.show && vm.notchState == .closed && (!musicManager.isPlaying && musicManager.isPlayerIdle) && Defaults[.showNotHumanFace] && !vm.hideOnClosed  {
-                          BoringFaceAnimation().animation(.interactiveSpring, value: musicManager.isPlayerIdle)
+                          HaloAuditFaceAnimation().animation(.interactiveSpring, value: musicManager.isPlayerIdle)
                       } else if vm.notchState == .open {
-                          BoringHeader()
+                          HaloAuditHeader()
                               .frame(height: max(24, vm.effectiveClosedNotchHeight))
                               .blur(radius: abs(gestureProgress) > 0.3 ? min(abs(gestureProgress), 8) : 0)
                               .animation(.spring(response: 1, dampingFraction: 1, blendDuration: 0.8), value: vm.notchState)
@@ -493,7 +493,7 @@ struct ContentView: View {
     }
 
     @ViewBuilder
-    func BoringFaceAnimation() -> some View {
+    func HaloAuditFaceAnimation() -> some View {
         HStack {
             HStack {
                 Rectangle()
@@ -780,7 +780,7 @@ struct FullScreenDropDelegate: DropDelegate {
 }
 
 #Preview {
-    let vm = BoringViewModel()
+    let vm = HaloAuditViewModel()
     vm.open()
     return ContentView()
         .environmentObject(vm)
@@ -790,7 +790,7 @@ struct FullScreenDropDelegate: DropDelegate {
 // MARK: - Auditor View
 
     struct AuditorView: View {
-        @EnvironmentObject var vm: BoringViewModel
+        @EnvironmentObject var vm: HaloAuditViewModel
         @StateObject var tvm = TrayDrop.shared
         @StateObject private var webSocket = SimpleWebSocketManager()
         @State private var isProcessing = false

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct NotchAuditorView: View {
-    @EnvironmentObject var vm: BoringViewModel
+    @EnvironmentObject var vm: HaloAuditViewModel
     @StateObject var tvm = TrayDrop.shared
     @State private var isProcessing = false
     @State private var runId = ""

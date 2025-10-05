@@ -12,7 +12,7 @@ class BatteryStatusViewModel: ObservableObject {
     private var runLoopSource: Unmanaged<CFRunLoopSource>?
     var animations: BoringAnimations = BoringAnimations()
 
-    @ObservedObject var coordinator = BoringViewCoordinator.shared
+    @ObservedObject var coordinator = HaloAuditViewCoordinator.shared
 
     @Published private(set) var levelBattery: Float = 0.0
     @Published private(set) var maxCapacity: Float = 0.0
@@ -28,8 +28,8 @@ class BatteryStatusViewModel: ObservableObject {
 
     static let shared = BatteryStatusViewModel()
 
-    /// Initializes the view model with a given BoringViewModel instance
-    /// - Parameter vm: The BoringViewModel instance
+    /// Initializes the view model with a given HaloAuditViewModel instance
+    /// - Parameter vm: The HaloAuditViewModel instance
     private init() {
         setupPowerStatus()
         setupMonitor()

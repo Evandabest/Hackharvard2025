@@ -1,6 +1,6 @@
 //
-//  boringNotchApp.swift
-//  boringNotchApp
+//  HaloAuditApp.swift
+//  HaloAudit
 //
 //  Created by Harsh Vardhan  Goswami  on 02/08/24.
 //
@@ -13,7 +13,7 @@ import Sparkle
 import SwiftUI
 
 @main
-struct DynamicNotchApp: App {
+struct HaloAuditApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Default(.menubarIcon) var showMenuBarIcon
     @Environment(\.openWindow) var openWindow
@@ -29,12 +29,12 @@ struct DynamicNotchApp: App {
     }
 
     var body: some Scene {
-        MenuBarExtra("boring.notch", systemImage: "sparkle", isInserted: $showMenuBarIcon) {
+        MenuBarExtra("HaloAudit", systemImage: "sparkle", isInserted: $showMenuBarIcon) {
             Button("Open Auditor") {
-                let coordinator = BoringViewCoordinator.shared
+                let coordinator = HaloAuditViewCoordinator.shared
                 coordinator.currentView = .auditor
                 // Trigger notch to open if closed
-                NotificationCenter.default.post(name: NSNotification.Name("BoringNotchShouldOpen"), object: nil)
+                NotificationCenter.default.post(name: NSNotification.Name("HaloAuditShouldOpen"), object: nil)
             }
             .keyboardShortcut(KeyEquivalent("a"), modifiers: .command)
             Divider()
@@ -44,7 +44,7 @@ struct DynamicNotchApp: App {
             .keyboardShortcut(KeyEquivalent(","), modifiers: .command)
             CheckForUpdatesView(updater: updaterController.updater)
             Divider()
-            Button("Restart Boring Notch") {
+            Button("Restart HaloAudit") {
                 guard let bundleIdentifier = Bundle.main.bundleIdentifier else { return }
 
                 let workspace = NSWorkspace.shared
@@ -71,10 +71,10 @@ struct DynamicNotchApp: App {
 class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem?
     var windows: [NSScreen: NSWindow] = [:]
-    var viewModels: [NSScreen: BoringViewModel] = [:]
+    var viewModels: [NSScreen: HaloAuditViewModel] = [:]
     var window: NSWindow?
-    let vm: BoringViewModel = .init()
-    @ObservedObject var coordinator = BoringViewCoordinator.shared
+    let vm: HaloAuditViewModel = .init()
+    @ObservedObject var coordinator = HaloAuditViewCoordinator.shared
     var whatsNewWindow: NSWindow?
     var timer: Timer?
     var closeNotchWorkItem: DispatchWorkItem?
@@ -119,10 +119,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    private func createBoringNotchWindow(for screen: NSScreen, with viewModel: BoringViewModel)
+    private func createHaloAuditWindow(for screen: NSScreen, with viewModel: HaloAuditViewModel)
         -> NSWindow
     {
-        let window = BoringNotchWindow(
+        let window = HaloAuditWindow(
             contentRect: NSRect(
                 x: 0, y: 0, width: openNotchSize.width, height: openNotchSize.height),
             styleMask: [.borderless, .nonactivatingPanel, .utilityWindow, .hudWindow],
@@ -197,7 +197,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
             if !Defaults[.showOnAllDisplays] {
                 let viewModel = self.vm
-                let window = self.createBoringNotchWindow(
+                let window = self.createHaloAuditWindow(
                     for: NSScreen.main ?? NSScreen.screens.first!, with: viewModel)
                 self.window = window
                 self.adjustWindowPosition(changeAlpha: true)
@@ -260,7 +260,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         if !Defaults[.showOnAllDisplays] {
             let viewModel = self.vm
-            let window = createBoringNotchWindow(
+            let window = createHaloAuditWindow(
                 for: NSScreen.main ?? NSScreen.screens.first!, with: viewModel)
             self.window = window
             adjustWindowPosition(changeAlpha: true)
@@ -334,8 +334,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
             for screen in currentScreens {
                 if windows[screen] == nil {
-                    let viewModel = BoringViewModel(screen: screen.localizedName)
-                    let window = createBoringNotchWindow(for: screen, with: viewModel)
+                    let viewModel = HaloAuditViewModel(screen: screen.localizedName)
+                    let window = createHaloAuditWindow(for: screen, with: viewModel)
 
                     windows[screen] = window
                     viewModels[screen] = viewModel
@@ -371,7 +371,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             vm.notchSize = getClosedNotchSize(screen: selectedScreen.localizedName)
 
             if window == nil {
-                window = createBoringNotchWindow(for: selectedScreen, with: vm)
+                window = createHaloAuditWindow(for: selectedScreen, with: vm)
             }
 
             if let window = window {

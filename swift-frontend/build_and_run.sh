@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Build and run Boring Notch from command line
-echo "🔨 Building Boring Notch..."
+# Build and run HaloAudit from command line
+echo "🔨 Building HaloAudit..."
 echo ""
 
 # Kill existing instance

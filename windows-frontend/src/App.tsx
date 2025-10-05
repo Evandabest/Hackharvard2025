@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AuditorView } from "./components/AuditorView";
-import { ChevronDown } from "lucide-react";
+// import { ChevronDown } from "lucide-react";
 
 const App: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);

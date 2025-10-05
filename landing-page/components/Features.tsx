@@ -20,55 +20,55 @@ export function Features() {
     {
       icon: Brain,
       title: 'AI-Powered Analysis',
-      description: 'Advanced machine learning algorithms analyze compliance documents with 99.9% accuracy, identifying issues humans might miss.',
+      description: 'Advanced machine learning algorithms analyze audit documents across all 9 audit types with 99.9% accuracy, identifying issues humans might miss.',
       color: 'from-purple-500 to-pink-500',
     },
     {
       icon: DollarSign,
       title: 'Significant Cost Savings',
-      description: 'Reduce compliance costs by up to 60% through automated auditing processes and reduced manual labor requirements.',
+      description: 'Reduce audit costs by up to 60% through automated report generation across all audit types and reduced manual labor requirements.',
       color: 'from-green-500 to-emerald-500',
     },
     {
       icon: Shield,
       title: 'Enterprise Security',
-      description: 'Bank-grade security with end-to-end encryption ensures your sensitive compliance data remains protected at all times.',
+      description: 'Bank-grade security with end-to-end encryption ensures your sensitive audit data remains protected at all times.',
       color: 'from-red-500 to-orange-500',
     },
     {
       icon: Clock,
       title: 'Real-time Processing',
-      description: 'Get instant compliance insights with our optimized AI pipeline that delivers audit results in seconds, not days.',
+      description: 'Get instant audit insights with our optimized AI pipeline that delivers comprehensive reports in seconds, not days.',
       color: 'from-blue-500 to-cyan-500',
     },
     {
       icon: FileText,
       title: 'Multi-Format Support',
-      description: 'Process PDFs, Excel files, CSV data, and more with intelligent content recognition for comprehensive compliance coverage.',
+      description: 'Process PDFs, Excel files, CSV data, and more with intelligent content recognition for comprehensive audit coverage across all 9 audit types.',
       color: 'from-indigo-500 to-purple-500',
     },
     {
       icon: BarChart3,
       title: 'Actionable Insights',
-      description: 'Transform raw compliance data into clear, actionable reports that help you make informed business decisions.',
+      description: 'Transform raw audit data into clear, actionable reports that help you make informed business decisions across all audit types.',
       color: 'from-yellow-500 to-amber-500',
     },
     {
       icon: Target,
-      title: 'Regulatory Compliance',
-      description: 'Stay compliant with SOX, GDPR, HIPAA, and other regulations with automated compliance monitoring and reporting.',
+      title: 'Multi-Audit Support',
+      description: 'Generate reports for Internal, External, Financial, Operational, Compliance, Information System, Payroll, and IRS Tax audits with automated monitoring.',
       color: 'from-pink-500 to-rose-500',
     },
     {
       icon: TrendingUp,
       title: 'Performance Analytics',
-      description: 'Track compliance metrics, identify trends, and optimize your audit processes with detailed analytics and reporting.',
+      description: 'Track audit metrics across all 9 audit types, identify trends, and optimize your audit processes with detailed analytics and reporting.',
       color: 'from-cyan-500 to-blue-500',
     },
     {
       icon: Zap,
       title: 'Automated Workflows',
-      description: 'Streamline your compliance processes with intelligent automation that reduces manual work and human error.',
+      description: 'Streamline your audit processes across all 9 audit types with intelligent automation that reduces manual work and human error.',
       color: 'from-orange-500 to-red-500',
     },
   ]
@@ -85,10 +85,10 @@ export function Features() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">
-            Powerful Compliance Features
+            Comprehensive Audit Features
           </h2>
           <p className="text-xl text-white/80 max-w-3xl mx-auto">
-            Everything you need for intelligent compliance auditing and cost reduction
+            Everything you need for generating professional audit reports across all 9 major audit types
           </p>
         </motion.div>
 

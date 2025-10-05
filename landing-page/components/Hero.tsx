@@ -6,9 +6,9 @@ import { DownloadButton } from './DownloadButton'
 
 export function Hero() {
   const stats = [
-    { number: '99.9%', label: 'AI Accuracy', icon: Shield },
+    { number: '9', label: 'Audit Types', icon: Shield },
     { number: '60%', label: 'Cost Savings', icon: DollarSign },
-    { number: '10K+', label: 'Audits Completed', icon: Clock },
+    { number: '10K+', label: 'Reports Generated', icon: Clock },
   ]
 
   return (
@@ -28,10 +28,10 @@ export function Hero() {
             className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6"
           >
             <span className="block">AI-Powered</span>
-            <span className="block">Compliance</span>
-            <span className="block gradient-text">Auditing</span>
+            <span className="block">Audit</span>
+            <span className="block gradient-text">Reporting</span>
             <span className="block text-2xl sm:text-3xl lg:text-4xl font-normal text-white/80 mt-4">
-              Save Money, Ensure Accuracy
+              Generate Reports for All Audit Types
             </span>
           </motion.h1>
 
@@ -41,8 +41,8 @@ export function Hero() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="text-lg sm:text-xl text-white/80 mb-8 max-w-2xl"
           >
-            Transform your business compliance with HaloAudit. Our AI-powered auditing platform 
-            automates compliance processes, reduces costs by up to 60%, and delivers unprecedented accuracy.
+            From Internal and External audits to Financial, Operational, and Compliance reports - 
+            HaloAudit generates comprehensive audit reports for all 9 major audit types with AI-powered accuracy.
           </motion.p>
 
           {/* Download Buttons */}
@@ -123,10 +123,10 @@ export function Hero() {
                   >
                     <Download className="w-12 h-12 text-primary-400 mx-auto mb-4" />
                     <p className="text-white/80 text-lg font-medium">
-                      Drop compliance documents here
+                      Drop audit documents here
                     </p>
                     <p className="text-white/60 text-sm mt-2">
-                      PDF, Excel, or CSV files
+                      Any audit type - PDF, Excel, or CSV files
                     </p>
                   </motion.div>
 
@@ -140,7 +140,7 @@ export function Hero() {
                     <div className="relative w-8 h-8">
                       <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-primary-500 animate-spin"></div>
                     </div>
-                    <span className="text-white/80 font-medium">AI Auditing...</span>
+                    <span className="text-white/80 font-medium">Generating Report...</span>
                   </motion.div>
 
                   {/* Results Preview */}
@@ -151,12 +151,12 @@ export function Hero() {
                     className="bg-gray-800 rounded-xl p-4 space-y-3"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-white/60 text-sm">Compliance Issues</span>
-                      <span className="text-red-400 font-semibold">3 found</span>
+                      <span className="text-white/60 text-sm">Audit Type</span>
+                      <span className="text-blue-400 font-semibold">Financial</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-white/60 text-sm">Processing Time</span>
-                      <span className="text-green-400 font-semibold">2.3s</span>
+                      <span className="text-white/60 text-sm">Report Status</span>
+                      <span className="text-green-400 font-semibold">Complete</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-white/60 text-sm">AI Confidence</span>

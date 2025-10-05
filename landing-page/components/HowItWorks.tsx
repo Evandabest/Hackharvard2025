@@ -7,22 +7,22 @@ export function HowItWorks() {
   const steps = [
     {
       number: '01',
-      title: 'Upload Compliance Documents',
-      description: 'Simply drag and drop your compliance documents, financial records, or audit files into HaloAudit. Our AI automatically detects document types and prepares them for analysis.',
+      title: 'Upload Audit Documents',
+      description: 'Simply drag and drop your audit documents, financial records, or compliance files into HaloAudit. Our AI automatically detects document types and audit categories for analysis.',
       icon: Upload,
       color: 'from-blue-500 to-cyan-500',
     },
     {
       number: '02',
-      title: 'AI-Powered Compliance Analysis',
-      description: 'Our advanced AI algorithms analyze your documents for compliance issues, regulatory violations, and potential risks with 99.9% accuracy, identifying problems humans might miss.',
+      title: 'AI-Powered Audit Analysis',
+      description: 'Our advanced AI algorithms analyze your documents across all 9 audit types for issues, violations, and potential risks with 99.9% accuracy, identifying problems humans might miss.',
       icon: Brain,
       color: 'from-purple-500 to-pink-500',
     },
     {
       number: '03',
-      title: 'Get Actionable Insights',
-      description: 'Receive comprehensive compliance reports with clear recommendations, cost-saving opportunities, and actionable steps to improve your business compliance posture.',
+      title: 'Get Comprehensive Reports',
+      description: 'Receive detailed audit reports for any of the 9 audit types with clear recommendations, cost-saving opportunities, and actionable steps to improve your business operations.',
       icon: BarChart3,
       color: 'from-green-500 to-emerald-500',
     },
@@ -43,7 +43,7 @@ export function HowItWorks() {
             How It Works
           </h2>
           <p className="text-xl text-white/80 max-w-3xl mx-auto">
-            Simple steps to powerful compliance insights
+            Simple steps to comprehensive audit reports for all 9 audit types
           </p>
         </motion.div>
 

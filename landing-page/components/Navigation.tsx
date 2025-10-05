@@ -19,6 +19,7 @@ export function Navigation() {
 
   const navItems = [
     { name: 'Features', href: '#features' },
+    { name: 'Audit Types', href: '#audit-types' },
     { name: 'How it Works', href: '#how-it-works' },
     { name: 'Download', href: '#download' },
   ]

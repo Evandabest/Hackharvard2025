@@ -30,13 +30,8 @@ export async function createUpload(c: Context<{ Bindings: Env }>): Promise<Respo
   // Generate R2 object key
   const r2Key = generateObjectKey(tenantId, runId, filename);
 
-  // Create signed upload URL
-  const { putUrl } = await createSignedUploadUrl({
-    bucket: c.env.R2_BUCKET,
-    key: r2Key,
-    contentType,
-    expiresIn: 3600, // 1 hour
-  });
+  // Create a direct upload endpoint URL
+  const putUrl = `${c.req.url.split('/uploads')[0]}/uploads/direct/${runId}`;
 
   // Create run record in D1
   await c.env.DB.prepare(
@@ -64,5 +59,59 @@ export async function createUpload(c: Context<{ Bindings: Env }>): Promise<Respo
     r2PutUrl: putUrl,
     r2Key,
   }, 201);
+}
+
+/**
+ * POST /uploads/direct/:runId
+ * Direct file upload endpoint that stores files in R2
+ */
+export async function directUpload(c: Context<{ Bindings: Env }>): Promise<Response> {
+  const runId = c.req.param('runId');
+  
+  try {
+    // Get the file from the request body
+    const fileData = await c.req.arrayBuffer();
+    
+    if (!fileData || fileData.byteLength === 0) {
+      throw new AppError(400, 'INVALID_REQUEST', 'No file data provided');
+    }
+    
+    // Get the run record to find the R2 key
+    const run = await c.env.DB.prepare('SELECT r2_key FROM runs WHERE id = ?')
+      .bind(runId)
+      .first();
+    
+    if (!run) {
+      throw new AppError(404, 'RUN_NOT_FOUND', 'Run not found');
+    }
+    
+    const r2Key = run.r2_key as string;
+    
+    // Store the file in R2
+    await c.env.R2_BUCKET.put(r2Key, fileData, {
+      httpMetadata: {
+        contentType: c.req.header('content-type') || 'application/octet-stream',
+      },
+    });
+    
+    // Update run status
+    await c.env.DB.prepare('UPDATE runs SET status = ? WHERE id = ?')
+      .bind('uploaded', runId)
+      .run();
+    
+    return c.json({
+      success: true,
+      message: 'File uploaded successfully',
+      runId,
+      r2Key,
+    });
+    
+  } catch (error) {
+    console.error('Direct upload failed:', error);
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError(500, 'UPLOAD_ERROR', 'Failed to upload file');
+  }
 }
 

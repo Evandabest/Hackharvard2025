@@ -27,8 +27,8 @@ def build_graph(config: Config) -> Callable[[RunState], RunState]:
     """
     # Initialize clients
     r2_client = R2Client(config)
-    gemini_client = GeminiClient(config)
     edge_client = EdgeClient(config)
+    gemini_client = GeminiClient(config, edge_client)
 
     # Create the graph
     workflow = StateGraph(RunState)

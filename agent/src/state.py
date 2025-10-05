@@ -23,6 +23,7 @@ class RunState(BaseModel):
     tenant_id: str
     r2_key: str
     mime_type: str | None = None
+    file_bytes: bytes | None = None
     raw_text: str | None = None
     chunks: list[str] = Field(default_factory=list)
     embeddings: list[list[float]] = Field(default_factory=list)

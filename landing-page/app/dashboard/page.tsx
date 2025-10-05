@@ -138,6 +138,119 @@ export default function Dashboard() {
     }
   }
 
+  const getDetectedIssues = (report: AuditReport) => {
+    const issues: any[] = []
+    
+    // Check automation flags for issues
+    const flags = report.executiveSummary.machine_readable_summary_for_automation
+    
+    // For testing purposes, let's also check if the report contains any concerning language
+    const reportText = JSON.stringify(report).toLowerCase()
+    const hasConcerns = reportText.includes('limitation') || 
+                       reportText.includes('misstatement') || 
+                       reportText.includes('concern') ||
+                       reportText.includes('qualified') ||
+                       reportText.includes('adverse') ||
+                       reportText.includes('disclaimer')
+    
+    if (flags.scope_limitation) {
+      issues.push({
+        id: 'scope_limitation',
+        code: 'SL-001',
+        severity: 'high',
+        title: 'Scope Limitation Detected',
+        detail: 'The audit has scope limitations that may affect the completeness of the audit opinion.'
+      })
+    }
+    
+    if (flags.material_misstatement) {
+      issues.push({
+        id: 'material_misstatement',
+        code: 'MM-001',
+        severity: 'critical',
+        title: 'Material Misstatement Identified',
+        detail: 'Material misstatements have been identified in the financial statements.'
+      })
+    }
+    
+    if (flags.going_concern) {
+      issues.push({
+        id: 'going_concern',
+        code: 'GC-001',
+        severity: 'high',
+        title: 'Going Concern Uncertainty',
+        detail: 'There are uncertainties about the entity\'s ability to continue as a going concern.'
+      })
+    }
+    
+    if (flags.key_audit_matters) {
+      issues.push({
+        id: 'key_audit_matters',
+        code: 'KAM-001',
+        severity: 'medium',
+        title: 'Key Audit Matters Identified',
+        detail: 'Key audit matters have been identified that require special attention.'
+      })
+    }
+    
+    if (flags.other_information) {
+      issues.push({
+        id: 'other_information',
+        code: 'OI-001',
+        severity: 'low',
+        title: 'Other Information Present',
+        detail: 'Additional information beyond the financial statements has been identified.'
+      })
+    }
+    
+    if (flags.legal_regulatory) {
+      issues.push({
+        id: 'legal_regulatory',
+        code: 'LR-001',
+        severity: 'medium',
+        title: 'Legal and Regulatory Matters',
+        detail: 'Legal and regulatory matters have been identified that may affect the audit.'
+      })
+    }
+    
+    // Check opinion type for issues
+    const opinion = report.executiveSummary.determination.opinion_type.toLowerCase()
+    if (opinion === 'qualified' || opinion === 'adverse' || opinion === 'disclaimer') {
+      issues.push({
+        id: 'opinion_issue',
+        code: 'OP-001',
+        severity: opinion === 'adverse' ? 'critical' : opinion === 'qualified' ? 'high' : 'medium',
+        title: `${opinion.charAt(0).toUpperCase() + opinion.slice(1)} Opinion`,
+        detail: `The audit resulted in a ${opinion} opinion, indicating issues with the financial statements.`
+      })
+    }
+    
+    // Check reasoning for potential issues
+    const reasoning = report.executiveSummary.determination.reasoning.toLowerCase()
+    if (reasoning.includes('limitation') || reasoning.includes('misstatement') || reasoning.includes('concern')) {
+      issues.push({
+        id: 'reasoning_issue',
+        code: 'RE-001',
+        severity: 'medium',
+        title: 'Audit Reasoning Concerns',
+        detail: 'The audit reasoning indicates potential concerns that require attention.'
+      })
+    }
+    
+    // Add a test issue to demonstrate functionality (remove this in production)
+    if (issues.length === 0 && hasConcerns) {
+      issues.push({
+        id: 'test_issue',
+        code: 'TEST-001',
+        severity: 'low',
+        title: 'Potential Issues Detected',
+        detail: 'The audit report contains language that may indicate potential issues requiring further review.'
+      })
+    }
+    
+    return issues
+  }
+
   if (loading) {
     return (
       <main className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
@@ -299,12 +412,17 @@ export default function Dashboard() {
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-white">Automation Flags</h3>
                 <div className="grid grid-cols-2 gap-2">
-                  {Object.entries(report.executiveSummary.machine_readable_summary_for_automation).map(([key, value]) => (
-                    <div key={key} className="flex items-center space-x-2">
-                      <div className={`w-2 h-2 rounded-full ${value ? 'bg-green-400' : 'bg-gray-400'}`}></div>
-                      <span className="text-sm text-gray-300 capitalize">{key.replace(/_/g, ' ')}</span>
-                    </div>
-                  ))}
+                  {Object.entries(report.executiveSummary.machine_readable_summary_for_automation).map(([key, value]) => {
+                    const isIssue = value && (key.includes('limitation') || key.includes('misstatement') || key.includes('concern') || key.includes('matter') || key.includes('information') || key.includes('regulatory'))
+                    return (
+                      <div key={key} className="flex items-center space-x-2">
+                        <div className={`w-2 h-2 rounded-full ${isIssue ? 'bg-red-400' : value ? 'bg-green-400' : 'bg-gray-400'}`}></div>
+                        <span className={`text-sm capitalize ${isIssue ? 'text-red-300' : value ? 'text-green-300' : 'text-gray-300'}`}>
+                          {key.replace(/_/g, ' ')}
+                        </span>
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             </div>
@@ -457,10 +575,10 @@ export default function Dashboard() {
           <div className="glass-effect rounded-2xl p-6 mb-8">
             <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
               <AlertCircle className="w-6 h-6 mr-2 text-yellow-400" />
-              Findings ({report.findings.length})
+              Findings ({getDetectedIssues(report).length})
             </h2>
             
-            {report.findings.length === 0 ? (
+            {getDetectedIssues(report).length === 0 ? (
               <div className="text-center py-8">
                 <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-4" />
                 <p className="text-xl text-white font-semibold">No significant findings detected.</p>
@@ -468,7 +586,7 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="space-y-4">
-                {report.findings.map((finding, index) => (
+                {getDetectedIssues(report).map((finding, index) => (
                   <div key={finding.id || index} className="bg-gray-900/50 rounded-lg p-4">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center space-x-3">

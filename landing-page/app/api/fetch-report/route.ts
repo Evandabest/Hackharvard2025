@@ -80,7 +80,15 @@ export async function GET(request: NextRequest) {
       
       if (jsonMatch) {
         try {
-          executiveSummary = JSON.parse(jsonMatch[1])
+          // Clean up the JSON by fixing JavaScript-style string concatenation
+          let jsonString = jsonMatch[1]
+          
+          // Fix JavaScript string concatenation with + operators
+          jsonString = jsonString.replace(/"([^"]*)"\s*\+\s*"([^"]*)"/g, '"$1$2"')
+          jsonString = jsonString.replace(/"([^"]*)"\s*\+\s*"([^"]*)"\s*\+\s*"([^"]*)"/g, '"$1$2$3"')
+          jsonString = jsonString.replace(/"([^"]*)"\s*\+\s*"([^"]*)"\s*\+\s*"([^"]*)"\s*\+\s*"([^"]*)"/g, '"$1$2$3$4"')
+          
+          executiveSummary = JSON.parse(jsonString)
         } catch (jsonError) {
           console.error('Failed to parse JSON from report:', jsonError)
           executiveSummary = {

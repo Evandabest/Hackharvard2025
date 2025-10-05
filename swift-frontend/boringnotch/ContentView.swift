@@ -1210,10 +1210,10 @@ struct FullScreenDropDelegate: DropDelegate {
                         print("📊 JSON response: \(json)")
                         
                         if let reportUrlString = json["reportUrl"] as? String {
-                            // Redirect to localhost Next.js frontend for development
-                            let nextjsUrl = URL(string: "http://localhost:3000/display?reportUrl=\(reportUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")")!
+                            // Redirect to localhost Next.js dashboard for development
+                            let nextjsUrl = URL(string: "http://localhost:3000/dashboard?runId=\(runId)")!
                             
-                            print("✅ Opening Next.js report page: \(nextjsUrl)")
+                            print("✅ Opening Next.js dashboard: \(nextjsUrl)")
                             NSWorkspace.shared.open(nextjsUrl)
                         } else {
                             print("❌ Failed to extract reportUrl from JSON")
@@ -1227,6 +1227,11 @@ struct FullScreenDropDelegate: DropDelegate {
                         
                         // If report isn't ready, show a message to the user
                         print("⚠️ Report not ready yet. The audit is still in progress.")
+                        
+                        // Still try to open the dashboard with the runId
+                        let nextjsUrl = URL(string: "http://localhost:3000/dashboard?runId=\(runId)")!
+                        print("✅ Opening Next.js dashboard anyway: \(nextjsUrl)")
+                        NSWorkspace.shared.open(nextjsUrl)
                     }
                 } else {
                     print("❌ Invalid HTTP response")

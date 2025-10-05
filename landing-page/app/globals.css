@@ -190,6 +190,48 @@ a {
   @apply absolute inset-0 rounded-full border-4 border-transparent border-t-primary-500 animate-spin;
 }
 
+/* Print styles for audit reports */
+@media print {
+  .glass-effect,
+  .bg-gradient-to-br,
+  .fixed {
+    display: none !important;
+  }
+  
+  .bg-white {
+    background: white !important;
+    color: black !important;
+  }
+  
+  .text-gray-900 {
+    color: black !important;
+  }
+  
+  .text-gray-700 {
+    color: #374151 !important;
+  }
+  
+  .text-gray-600 {
+    color: #4b5563 !important;
+  }
+  
+  .border-gray-300 {
+    border-color: #d1d5db !important;
+  }
+  
+  .shadow-xl {
+    box-shadow: none !important;
+  }
+  
+  .rounded-lg {
+    border-radius: 0 !important;
+  }
+  
+  body {
+    background: white !important;
+  }
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .hero-title {

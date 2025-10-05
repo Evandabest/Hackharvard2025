@@ -10,7 +10,7 @@ import { rateLimit } from './middleware/ratelimit.js';
 // Route handlers
 import { authStart } from './routes/auth.js';
 import { createUpload, directUpload } from './routes/uploads.js';
-import { enqueueRun, getRunStatus } from './routes/runs.js';
+import { enqueueRun, getRunStatus, getReportUrl, getReportContent } from './routes/runs.js';
 import { vectorUpsert, vectorQuery } from './routes/vector.js';
 import { d1Query } from './routes/d1.js';
 import { llmGateway, llmEmbed } from './routes/llm.js';
@@ -63,7 +63,7 @@ app.get('/test-r2', async (c) => {
     console.error('R2 test error:', error);
     return c.json({
       success: false,
-      error: error.message,
+      error: error instanceof Error ? error.message : String(error),
       bucketType: typeof c.env.R2_BUCKET
     });
   }
@@ -79,6 +79,8 @@ app.post('/uploads/direct/:runId', rateLimit({ maxTokens: 50, refillRate: 5 }), 
 // Run management routes
 app.post('/runs/:runId/enqueue', rateLimit({ maxTokens: 20, refillRate: 2 }), enqueueRun);
 app.get('/runs/:runId/status', rateLimit({ maxTokens: 60, refillRate: 10 }), getRunStatus);
+app.get('/runs/:runId/report', rateLimit({ maxTokens: 60, refillRate: 10 }), getReportUrl);
+app.get('/runs/:runId/report-content', rateLimit({ maxTokens: 60, refillRate: 10 }), getReportContent);
 
 // WebSocket routes
 app.get('/ws/run/:runId', wsRunConnection);

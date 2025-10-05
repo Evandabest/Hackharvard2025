@@ -7,12 +7,18 @@ export interface RunState {
   percent: number;
   lastMessage: string;
   lastUpdated: number;
+  reportKey?: string;
+  summary?: string;
+  findingsCount?: number;
 }
 
 export interface UpdatePayload {
   phase?: string;
   percent?: number;
   message?: string;
+  reportKey?: string;
+  summary?: string;
+  findingsCount?: number;
 }
 
 export interface WebSocketMessage {
@@ -119,6 +125,9 @@ export class RunRoom {
     if (payload.phase) updated.phase = payload.phase;
     if (payload.percent !== undefined) updated.percent = payload.percent;
     if (payload.message) updated.lastMessage = payload.message;
+    if (payload.reportKey) updated.reportKey = payload.reportKey;
+    if (payload.summary) updated.summary = payload.summary;
+    if (payload.findingsCount !== undefined) updated.findingsCount = payload.findingsCount;
 
     this.runState = updated;
 
@@ -126,8 +135,9 @@ export class RunRoom {
     await this.state.storage.put('runState', this.runState);
 
     // Broadcast to all connected clients
+    const messageType = updated.phase === 'done' ? 'done' : 'progress';
     this.broadcast({
-      type: 'progress',
+      type: messageType,
       data: this.runState,
       timestamp: Date.now(),
     });

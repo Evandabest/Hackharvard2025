@@ -104,3 +104,66 @@ export async function getRunStatus(c: Context<{ Bindings: Env }>): Promise<Respo
   });
 }
 
+/**
+ * GET /runs/:runId/report
+ * Get presigned URL for the audit report
+ */
+export async function getReportUrl(c: Context<{ Bindings: Env }>): Promise<Response> {
+  const runId = c.req.param('runId');
+
+  // Get real-time state from DO to get the report key
+  const doId = c.env.RUNROOM.idFromName(runId);
+  const doStub = c.env.RUNROOM.get(doId);
+  
+  const doResponse = await doStub.fetch('http://do/status');
+  const doState = await doResponse.json() as any;
+
+  if (!doState.reportKey) {
+    throw new NotFoundError('Report not yet available');
+  }
+
+  // Instead of trying to create a presigned URL, return a backend endpoint that serves the report
+  const reportUrl = `${c.req.url.split('/runs')[0]}/runs/${runId}/report-content`;
+
+  return c.json({
+    reportUrl,
+    reportKey: doState.reportKey,
+  });
+}
+
+/**
+ * GET /runs/:runId/report-content
+ * Serve the actual report content from R2
+ */
+export async function getReportContent(c: Context<{ Bindings: Env }>): Promise<Response> {
+  const runId = c.req.param('runId');
+
+  // Get real-time state from DO to get the report key
+  const doId = c.env.RUNROOM.idFromName(runId);
+  const doStub = c.env.RUNROOM.get(doId);
+  
+  const doResponse = await doStub.fetch('http://do/status');
+  const doState = await doResponse.json() as any;
+
+  if (!doState.reportKey) {
+    throw new NotFoundError('Report not yet available');
+  }
+
+  // Get the report content from R2
+  const reportObject = await c.env.R2_BUCKET.get(doState.reportKey);
+  
+  if (!reportObject) {
+    throw new NotFoundError('Report file not found');
+  }
+
+  const content = await reportObject.text();
+
+  return new Response(content, {
+    status: 200,
+    headers: {
+      'Content-Type': 'text/markdown; charset=utf-8',
+      'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
+    },
+  });
+}
+

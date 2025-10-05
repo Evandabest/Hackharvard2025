@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Operating System Files
 .DS_Store
 .AppleDouble
@@ -38,3 +39,6 @@ $RECYCLE.BIN/
 node_modules/
 
 dist/
+=======
+node_modules/
+>>>>>>> 1ae5d9f96dfcf300af4a3604185456e6b3c56c8b

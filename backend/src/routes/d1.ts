@@ -81,6 +81,38 @@ export async function d1Query(c: Context<{ Bindings: Env }>): Promise<Response> 
       });
     } else {
       // INSERT/UPDATE queries - return metadata
+      
+      // Special handling for insert_event: check if it's the final event with report_key
+      if (name === 'insert_event' && params.length >= 5) {
+        const [eventId, runId, level, message, dataJson] = params;
+        
+        // Parse the data field to check for report_key
+        try {
+          const eventData = dataJson ? JSON.parse(dataJson as string) : {};
+          
+          // If this is the final event with a report_key, update the DO with the report URL
+          if (eventData.report_key && message === 'Audit complete') {
+            const doId = c.env.RUNROOM.idFromName(runId as string);
+            const doStub = c.env.RUNROOM.get(doId);
+            
+            await doStub.fetch('http://do/update', {
+              method: 'POST',
+              body: JSON.stringify({
+                phase: 'done',
+                percent: 100,
+                message: 'Audit complete',
+                reportKey: eventData.report_key,
+                summary: eventData.summary || '',
+                findingsCount: eventData.findings_count || 0,
+              }),
+            });
+          }
+        } catch (parseError) {
+          // If parsing fails, just continue - don't fail the event insert
+          console.warn('Failed to parse event data:', parseError);
+        }
+      }
+      
       return c.json({
         success: result.success,
         meta: result.meta,

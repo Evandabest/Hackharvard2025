@@ -391,7 +391,7 @@ Follow these rules:
 7) Keep wording professional and compliant with GAAS / PCAOB / ISA conventions. Use the reporting framework (e.g., U.S. GAAP, IFRS) exactly as provided.
 
 USER INPUT (JSON):
-{json.dumps(audit_context, indent=2)}
+{orjson.dumps(audit_context, option=orjson.OPT_INDENT_2).decode()}
 
 AUDIT FINDINGS FROM DOCUMENT ANALYSIS:
 {findings_text if findings_text else "No significant findings detected."}

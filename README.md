@@ -11,7 +11,9 @@ Built for developers, analysts, and compliance teams, HaloAudit bridges privacy 
 ## 🚀 Quick Start
 
 ### What You Have
+
 A complete, production-ready document audit system with:
+
 - ✅ **Backend API** - Deployed at `https://auditor-edge.evanhaque1.workers.dev`
 - ✅ **Python Agent** - Ready to run (dependencies installed)
 - ✅ **Swift macOS App** - HaloAudit rebranded and ready
@@ -22,7 +24,7 @@ A complete, production-ready document audit system with:
 # 1. Test backend is working
 curl https://auditor-edge.evanhaque1.workers.dev/
 
-# 2. Check job queue  
+# 2. Check job queue
 curl https://auditor-edge.evanhaque1.workers.dev/jobs/stats \
   -H "Authorization: Bearer OnOGTTCQw1Y4+qyah8n0xKDXRe5RLFqu6BM/P+UjR3k"
 
@@ -95,6 +97,7 @@ cd ../swift-frontend
 ## 📱 Swift App Features
 
 ### HaloAudit Branding
+
 - ✅ **App Name**: Changed from "boringNotch" to "HaloAudit"
 - ✅ **Bundle ID**: Updated to `com.haloaudit.app`
 - ✅ **Display Name**: "HaloAudit" throughout the system
@@ -102,6 +105,7 @@ cd ../swift-frontend
 - ✅ **Logo Assets**: Ready for replacement
 
 ### Auditor Tab
+
 - **Location**: Third tab in the notch (Home | Shelf | Auditor)
 - **Icon**: Document with magnifying glass
 - **Features**:
@@ -112,6 +116,7 @@ cd ../swift-frontend
   - "Show Report" button redirects to Next.js website
 
 ### Upload States
+
 - **Idle**: Dashed border drop zone with "Drag & drop PDF or CSV"
 - **Uploading**: Progress bar with percentage
 - **Processing**: Circular progress with phase updates
@@ -123,12 +128,13 @@ cd ../swift-frontend
 ## 🔧 Backend (Cloudflare Workers)
 
 ### Deployed Endpoints
+
 **URL**: `https://auditor-edge.evanhaque1.workers.dev`
 
 ```typescript
 // Client-facing
 POST   /uploads/create         // Create upload, get R2 URL
-POST   /runs/:id/enqueue        // Queue for processing  
+POST   /runs/:id/enqueue        // Queue for processing
 GET    /runs/:id/status         // Get status
 GET    /runs/:id/report-url     // Get report URL
 GET    /runs/:id/report-content // Serve report content
@@ -145,6 +151,7 @@ POST   /d1/query                // Safe DB queries
 ```
 
 ### Database Schema
+
 ```sql
 runs      - Upload and processing runs
 findings  - Audit findings from analysis
@@ -157,9 +164,10 @@ jobs      - Job queue (replaces Cloudflare Queues)
 ## 🐍 Python Agent
 
 ### Pipeline (9 nodes)
+
 1. **Ingest** - Download from R2
 2. **Extract** - Gemini multimodal API (NO local OCR!)
-3. **Chunk** - Smart text splitting  
+3. **Chunk** - Smart text splitting
 4. **Embed** - Gemini 768-dim vectors
 5. **Index** - Store in Vectorize
 6. **Checks** - 3 deterministic checks:
@@ -171,6 +179,7 @@ jobs      - Job queue (replaces Cloudflare Queues)
 9. **Persist** - Save to D1
 
 ### Start Agent
+
 ```bash
 cd agent
 source venv/bin/activate
@@ -182,6 +191,7 @@ python -m src.main
 ## 🌐 Next.js Website
 
 ### Report Display
+
 - **URL**: `http://localhost:3000/display?reportUrl=...`
 - **Features**:
   - Black theme with professional styling
@@ -190,6 +200,7 @@ python -m src.main
   - Responsive design for audit reports
 
 ### Setup
+
 ```bash
 cd landing-page
 npm install
@@ -201,6 +212,7 @@ npm run dev
 ## 🚀 Complete Setup (From Zero)
 
 ### 1. Backend Setup
+
 ```bash
 cd backend
 
@@ -219,6 +231,7 @@ npm run deploy
 ```
 
 ### 2. Agent Setup
+
 ```bash
 cd agent
 
@@ -231,6 +244,7 @@ make dev
 ```
 
 ### 3. Swift App
+
 ```bash
 cd swift-frontend
 
@@ -239,6 +253,7 @@ cd swift-frontend
 ```
 
 ### 4. Next.js Website
+
 ```bash
 cd landing-page
 
@@ -255,6 +270,7 @@ npm run dev
 ## 🧪 Testing
 
 ### Quick Health Checks
+
 ```bash
 # Backend health
 curl https://auditor-edge.evanhaque1.workers.dev/
@@ -268,6 +284,7 @@ curl https://auditor-edge.evanhaque1.workers.dev/jobs/stats \
 ```
 
 ### End-to-End Test
+
 1. Start agent: `cd agent && python -m src.main`
 2. Open Swift app: `cd swift-frontend && ./build_and_run.sh`
 3. Open notch → Auditor tab → Drop a PDF
@@ -278,8 +295,9 @@ curl https://auditor-edge.evanhaque1.workers.dev/jobs/stats \
 ## 💰 Cost Breakdown
 
 ### Free Tier Only!
+
 - **Workers**: First 10M requests free
-- **D1**: First 5GB + 5M reads/day free  
+- **D1**: First 5GB + 5M reads/day free
 - **R2**: First 10GB free
 - **Vectorize**: Free tier available
 - **Durable Objects**: First 1M requests free
@@ -291,6 +309,7 @@ curl https://auditor-edge.evanhaque1.workers.dev/jobs/stats \
 ## 🎯 Key Features
 
 ### macOS App
+
 - ✅ Drag & drop file upload
 - ✅ Real-time progress visualization
 - ✅ WebSocket status updates
@@ -298,6 +317,7 @@ curl https://auditor-edge.evanhaque1.workers.dev/jobs/stats \
 - ✅ HaloAudit branding throughout
 
 ### Backend API
+
 - ✅ Signed R2 upload URLs
 - ✅ D1-backed job queue (free!)
 - ✅ Durable Objects for WebSocket
@@ -305,6 +325,7 @@ curl https://auditor-edge.evanhaque1.workers.dev/jobs/stats \
 - ✅ Rate limiting and authentication
 
 ### AI Pipeline
+
 - ✅ Gemini multimodal text extraction (no OCR!)
 - ✅ Gemini embeddings (768-dim)
 - ✅ LangGraph orchestration
@@ -317,12 +338,14 @@ curl https://auditor-edge.evanhaque1.workers.dev/jobs/stats \
 ## 🆘 Troubleshooting
 
 ### Common Issues
+
 1. **Agent not connecting**: Check `.env` configuration
 2. **Swift build fails**: Ensure all files are in Xcode project
 3. **WebSocket not working**: Check Durable Object deployment
 4. **Report not displaying**: Verify Next.js environment variables
 
 ### Debug Commands
+
 ```bash
 # Check agent logs
 cd agent && python -m src.main
@@ -339,7 +362,7 @@ cd swift-frontend && ./build_and_run.sh
 ## 📚 Documentation
 
 - **Backend**: `backend/README.md`
-- **Agent**: `agent/README.md` 
+- **Agent**: `agent/README.md`
 - **Swift App**: `swift-frontend/boringnotch/components/Auditor/README.md`
 - **Architecture**: `backend/ARCHITECTURE.md`
 - **Deployment**: `backend/DEPLOYMENT_CHECKLIST.md`
@@ -349,8 +372,9 @@ cd swift-frontend && ./build_and_run.sh
 ## 🎉 What You Built
 
 A **complete, production-ready audit system** with:
+
 - 🌐 Global edge API
-- 🤖 AI-powered processing  
+- 🤖 AI-powered processing
 - 📱 Beautiful macOS app
 - 💰 $0/month cost
 - 📚 Comprehensive docs

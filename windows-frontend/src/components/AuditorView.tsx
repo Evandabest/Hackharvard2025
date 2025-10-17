@@ -103,7 +103,7 @@ export const AuditorView: React.FC = () => {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className="text-center"
+              className="flex flex-col items-center justify-center h-full text-center"
             >
               <PlayCircle className="w-10 h-10 text-gray-300" />
               <p className="text-gray-300 font-semibold mt-1">Run Audit</p>

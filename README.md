@@ -38,6 +38,24 @@ cd ../swift-frontend
 ./build_and_run.sh
 ```
 
+```shell
+# 1. Test backend is working
+curl.exe https://auditor-edge.evanhaque1.workers.dev/
+
+# 2. Check job queue
+curl.exe https://auditor-edge.evanhaque1.workers.dev/jobs/stats `
+  -H "Authorization: Bearer OnOGTTCQw1Y4+qyah8n0xKDXRe5RLFqu6BM/P+UjR3k"
+
+# 3. Start the agent
+cd agent
+venv/bin/activate
+python -m src.main
+
+# 4. Test the Swift app
+cd ../windows-frontend
+npm run dev
+```
+
 ---
 
 ## 🏗️ Architecture
